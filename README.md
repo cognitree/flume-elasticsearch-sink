@@ -1,0 +1,1 @@
+Flume sink plugin for Elasticsearch 5.4
