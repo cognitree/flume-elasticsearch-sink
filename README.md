@@ -1,4 +1,4 @@
-##**ElasticSearch Sink**
+**ElasticSearch Sink**
 
 This sink will read the events from a channel converts them to the elastic search documents and add them to the bulk processor.
 Bulk processor will write the documents to elastic search based on the configuration provided.
@@ -55,19 +55,19 @@ Example of agent named a1
   a1.sinks.k1.es.bulkProcessor.name=bulkprocessor
   a1.sinks.k1.es.bulkSize=5
   a1.sinks.k1.es.bulkSize.unit=MB
-  a1.sinks.k1.es.concurrent.request=0
+  a1.sinks.k1.es.concurrent.request=1
   a1.sinks.k1.es.flush.interval.time=5m
-  a1.sinks.k1.es.backoff.policy.time.interval=5m
-  a1.sinks.k1.es.backoff.policy.retries=3
-  a1.sinks.k1.es.cluster.name=prashant-es
+  a1.sinks.k1.es.backoff.policy.time.interval=50M
+  a1.sinks.k1.es.backoff.policy.retries=8
+  a1.sinks.k1.es.cluster.name=es-cluster
   a1.sinks.k1.es.client.transport.sniff=false
   a1.sinks.k1.es.client.transport.ignore_cluster_name=false
   a1.sinks.k1.es.client.transport.ping_timeout=5s
   a1.sinks.k1.es.client.transport.nodes_sampler_interval=5s
   a1.sinks.k1.es.client.hostName=localhost
   a1.sinks.k1.es.client.port=9300
-  a1.sinks.k1.es.index.name=di
-  a1.sinks.k1.es.index.type=tp
+  a1.sinks.k1.es.index.name=defaultindex
+  a1.sinks.k1.es.index.type=defaulttype
   a1.sinks.k1.es.index.builder=com.cognitree.flume.sink.elasticsearch.HeaderBasedIndexBuilder
-  a1.sinks.k1.es.serializer.builder=com.cognitree.flume.sink.elasticsearch.CsvToJsonSerializerBuilder
+  a1.sinks.k1.es.serializer.builder=com.cognitree.flume.sink.elasticsearch.SimpleSerializerBuilder
 ````
