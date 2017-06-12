@@ -87,6 +87,7 @@ public class BulkProcessorBuilder {
                 logger.info("Bulk execution completed [" + executionId + "]\n" +
                         "Took (ms): " + response.getTookInMillis() + "\n" +
                         "Failures: " + response.hasFailures() + "\n" +
+                        "Failures Message: " + response.buildFailureMessage() + "\n" +
                         "Count: " + response.getItems().length);
             }
 
