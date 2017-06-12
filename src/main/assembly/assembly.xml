@@ -16,7 +16,6 @@
             </includes>
         </dependencySet>
         <dependencySet>
-            <!--<useProjectArtifact>false</useProjectArtifact>-->
             <outputDirectory>elasticsearch-5.4/libext</outputDirectory>
             <unpack>false</unpack>
         </dependencySet>
