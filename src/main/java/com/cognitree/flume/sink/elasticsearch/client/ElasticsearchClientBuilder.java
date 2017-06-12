@@ -1,8 +1,5 @@
 package com.cognitree.flume.sink.elasticsearch.client;
 
-import static com.cognitree.flume.sink.elasticsearch.Constants.*;
-import com.cognitree.flume.sink.elasticsearch.Util;
-import org.apache.flume.Context;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -14,43 +11,53 @@ import org.slf4j.LoggerFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import static com.cognitree.flume.sink.elasticsearch.Constants.*;
+
 /**
  * Created by prashant
  */
-public class ElasticSearchClient {
+public class ElasticsearchClientBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(ElasticSearchClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchClientBuilder.class);
 
     private String clusterName;
-
-    private boolean transportSniff;
-
-    private boolean ignoreClusterName;
-
-    private TimeValue transportPingTimeout;
-
-    private TimeValue nodeSamplerInterval;
-
     private String hostName;
-
     private Integer port;
 
-    public TransportClient generateTransportClient(Context context) {
-        clusterName = context.getString(PREFIX + ES_CLUSTER_NAME);
-        transportSniff = context.getBoolean(
-                PREFIX + ES_TRANSPORT_SNIFF, false);
-        ignoreClusterName = context.getBoolean(
-                PREFIX + ES_IGNORE_CLUSTER_NAME, false);
-        transportPingTimeout = Util.getTimeValue(context.getString(
-                PREFIX + ES_TRANSPORT_PING_TIMEOUT), DEFAULT_ES_TIME);
-        nodeSamplerInterval = Util.getTimeValue(context.getString(
-                PREFIX + ES_TRANSPORT_NODE_SAMPLER_INTERVAL), DEFAULT_ES_TIME);
-        hostName = context.getString(ES_HOST_NAME);
-        port = context.getInteger(ES_PORT);
-        return generateTransportClient();
+    private boolean transportSniff;
+    private boolean ignoreClusterName;
+    private TimeValue transportPingTimeout;
+    private TimeValue nodeSamplerInterval;
+
+
+    public ElasticsearchClientBuilder(String clusterName, String hostName, Integer port) {
+        this.clusterName = clusterName;
+        this.hostName = hostName;
+        this.port = port;
     }
 
-    private TransportClient generateTransportClient() {
+
+    public ElasticsearchClientBuilder setTransportSniff(boolean transportSniff) {
+        this.transportSniff = transportSniff;
+        return this;
+    }
+
+    public ElasticsearchClientBuilder setIgnoreClusterName(boolean ignoreClusterName) {
+        this.ignoreClusterName = ignoreClusterName;
+        return this;
+    }
+
+    public ElasticsearchClientBuilder setTransportPingTimeout(TimeValue transportPingTimeout) {
+        this.transportPingTimeout = transportPingTimeout;
+        return this;
+    }
+
+    public ElasticsearchClientBuilder setNodeSamplerInterval(TimeValue nodeSamplerInterval) {
+        this.nodeSamplerInterval = nodeSamplerInterval;
+        return this;
+    }
+
+    public TransportClient build(){
         TransportClient client = null;
         try {
             logger.trace("Cluster Name: [{}], Transport Sniff: [{}]" +

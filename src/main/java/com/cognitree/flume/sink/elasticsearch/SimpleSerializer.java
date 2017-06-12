@@ -10,10 +10,14 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
  * Created by prashant
+ *
+ * This Serializer assumes the event body to be in JSON format
+ * Validate the json and copy the same structure in the parser
+ * return the XContentBuilder
  */
-public class SimpleSerializerBuilder implements SerializerBuilder {
+public class SimpleSerializer implements Serializer {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleSerializerBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleSerializer.class);
 
     public XContentBuilder serialize(Event event) {
         XContentBuilder builder = null;

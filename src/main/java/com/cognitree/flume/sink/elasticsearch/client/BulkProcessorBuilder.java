@@ -76,7 +76,7 @@ public class BulkProcessorBuilder {
             @Override
             public void beforeBulk(long executionId,
                                    BulkRequest request) {
-                logger.info("Bulk Execution [" + executionId + "]\n" +
+                logger.trace("Bulk Execution [" + executionId + "]\n" +
                         "No of actions " + request.numberOfActions());
             }
 
@@ -84,7 +84,7 @@ public class BulkProcessorBuilder {
             public void afterBulk(long executionId,
                                   BulkRequest request,
                                   BulkResponse response) {
-                logger.info("Bulk execution completed [" + executionId + "]\n" +
+                logger.trace("Bulk execution completed [" + executionId + "]\n" +
                         "Took (ms): " + response.getTookInMillis() + "\n" +
                         "Failures: " + response.hasFailures() + "\n" +
                         "Failures Message: " + response.buildFailureMessage() + "\n" +

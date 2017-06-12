@@ -1,13 +1,12 @@
-**ElasticSearch Sink**
+**Elasticsearch Sink**
 
-This sink will read the events from a channel converts them to the elastic search documents and add them to the bulk processor.
-Bulk processor will write the documents to elastic search based on the configuration provided.
+The sink reads events from a channel, serializes them into json documents and batches them into a bulk processor.
+Bulk processor batches the writes to elasticsearch as configured.
 
-This sink provides Index name building feature where you can define your index name in the configuration file or you can define your own 
-Index builder and provide the class in the configuration. By default it will use the index name from the configuration file.
+The elasticsearch index, type and id for each event can be defined statically in the configuration file or can be derived dynamically using a custom IndexBuilder. By default it will use the index name from the configuration file.
 
-By default events are serialized for elastic search by SimpleSerializerBuilder.
-This behaviour can be overridden by implementing the SerializerBuilder interface.
+By default, events are assumed to be in json format.
+This assumption can be overridden by implementing the Serializer interface.
  
 You need to Follow this Steps to use this sink in Apache flume.
 Execute the following command in project.
@@ -22,7 +21,7 @@ flume-conf.properties file of apache flume Installation.
 Required properties are in bold.
 
 | Property Name                              | Default      | Description                                                                                   |
-|--------------------------------------------|:--------------:|-----------------------------------------------------------------------------------------------:|
+|--------------------------------------------|:--------------:|:-----------------------------------------------------------------------------------------------|
 | **channel**                                    | -            |                                                                                               |
 | **type**                                       | -            | The component type name, needs to be com.cognitree.flume.sink.elasticsearch.ElasticSearchSink |
 | **es.cluster.name**                            | -            | Name of the elastic search cluster to connect to                                              |
@@ -43,7 +42,7 @@ Required properties are in bold.
 | es.index.name                              | defaultindex | Index name to be used to store the documents                                                  |
 | es.index.type                              | defaulttype  | Index type to be used to store the documents                                                  |
 | es.index.builder                           | -            | Implementation of com.cognitree.flume.sink.elasticsearch.IndexBuilder interface accepted      |
-| es.serializer.builder                      | -            | Implementation of com.cognitree.flume.sink.elasticsearch.SerializerBuilder interface accepted |
+| es.serializer.builder                      |com.cognitree.flume.sink.elasticsearch.SimpleSerializer            | Implementation of com.cognitree.flume.sink.elasticsearch.Serializer interface accepted |
 
 
 Example of agent named a1
@@ -69,5 +68,5 @@ Example of agent named a1
   a1.sinks.k1.es.index.name=defaultindex
   a1.sinks.k1.es.index.type=defaulttype
   a1.sinks.k1.es.index.builder=com.cognitree.flume.sink.elasticsearch.HeaderBasedIndexBuilder
-  a1.sinks.k1.es.serializer.builder=com.cognitree.flume.sink.elasticsearch.SimpleSerializerBuilder
+  a1.sinks.k1.es.serializer.builder=com.cognitree.flume.sink.elasticsearch.SimpleSerializer
 ````

@@ -6,13 +6,11 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 /**
  * Created by prashant
  */
-public interface SerializerBuilder {
+public interface Serializer {
 
     /**
-     * Converts the body of the event to the XContentBuilder format from the given format
-     *
-     * @param event
-     * @return
+     * Converts the body of the event to the
+     * XContentBuilder format from the given format
      */
     XContentBuilder serialize(Event event);
 }

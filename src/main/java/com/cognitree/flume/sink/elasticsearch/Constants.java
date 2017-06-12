@@ -43,7 +43,7 @@ public class Constants {
     public static final String ES_INDEX_BUILDER = "es.index.builder";
 
     public static final String ES_SERIALIZER_BUILDER = "es.serializer.builder";
-    public static final String DEFAULT_ES_SERIALIZER_BUILDER = "com.cognitree.flume.sink.elasticsearch.SimpleSerializerBuilder";
+    public static final String DEFAULT_ES_SERIALIZER_BUILDER = "com.cognitree.flume.sink.elasticsearch.SimpleSerializer";
 
     // Mandatory Properties
     public static final String ES_CLUSTER_NAME = "cluster.name";

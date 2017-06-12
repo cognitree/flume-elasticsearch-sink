@@ -1,33 +1,25 @@
 package com.cognitree.flume.sink.elasticsearch;
 
+import org.apache.flume.Event;
+import org.apache.flume.conf.Configurable;
+
 /**
  * Created by prashant
  */
-import org.apache.flume.Event;
-
-public interface IndexBuilder {
+public interface IndexBuilder extends Configurable {
 
     /**
      * Returns index name
-     *
-     * @param event
-     * @return
      */
     String getIndexName(Event event);
 
     /**
      * Return Index Type
-     *
-     * @param event
-     * @return
      */
     String getIndexType(Event event);
 
     /**
      * Returns Index Id
-     *
-     * @param event
-     * @return
      */
     String getIndexId(Event event);
 }

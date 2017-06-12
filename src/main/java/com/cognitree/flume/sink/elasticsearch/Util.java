@@ -1,5 +1,7 @@
 package com.cognitree.flume.sink.elasticsearch;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.flume.Context;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
@@ -65,5 +67,16 @@ public class Util {
             }
         }
         return byteSizeValue;
+    }
+
+    /**
+     * Returns the context value for the contextId
+     */
+    public static String getContextValue(Context context, String contextId) {
+        String contextValue = null;
+        if (StringUtils.isNotBlank(context.getString(contextId))) {
+            contextValue = context.getString(contextId);
+        }
+        return contextValue;
     }
 }
