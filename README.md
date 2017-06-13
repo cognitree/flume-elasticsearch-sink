@@ -20,8 +20,8 @@ Follow these steps to use this sink in Apache flume:
 
 Required properties are in bold.
 
-| Property Name                              | Default      | Description                                                                                     |
-|--------------------------------------------|:--------------:|:----------------------------------------------------------------------------------------------|
+| Property Name                              | Default | Description                                                                                   |
+|--------------------------------------------|--------------|:----------------------------------------------------------------------------------------------|
 | **channel**                                | -              |                                                                                               |
 | **type**                                   | -              | The component type name, has to be com.cognitree.flume.sink.elasticsearch.ElasticSearchSink   |
 | **es.cluster.name**                        | elasticsearch  | Name of the elasticsearch cluster to connect to                                               |
@@ -40,8 +40,8 @@ Required properties are in bold.
 | es.client.transport.nodes_sampler_interval | 5s             | How often to sample / ping the nodes listed and connected                                     |
 | es.index                                   | default        | Index name to be used to store the documents                                                  |
 | es.type                                    | default        | Type to be used to store the documents                                                        |
-| es.index.builder                           |com.cognitree.flume.sink.elasticsearch.StaticIndexBuilder          | Implementation of com.cognitree.flume.sink.elasticsearch.IndexBuilder interface |
-| es.serializer                              |com.cognitree.flume.sink.elasticsearch.SimpleSerializer            | Implementation of com.cognitree.flume.sink.elasticsearch.Serializer interface |
+| es.index.builder                           |com.cognitree.<br>flume.sink.<br>elasticsearch.<br>StaticIndexBuilder          | Implementation of com.cognitree.flume.sink.elasticsearch.IndexBuilder interface |
+| es.serializer                              |com.cognitree.<br>flume.sink.<br>elasticsearch.<br>SimpleSerializer            | Implementation of com.cognitree.flume.sink.elasticsearch.Serializer interface |
 
 
 Example of agent named agent
