@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
-import static com.cognitree.flume.sink.elasticsearch.Constants.ES_INDEX_ID;
-import static com.cognitree.flume.sink.elasticsearch.Constants.ES_INDEX_TYPE;
 
 /**
  * Created by prashant
