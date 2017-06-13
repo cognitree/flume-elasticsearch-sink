@@ -22,7 +22,7 @@
     <groupId>org.apache.flume.flume-ng-sinks</groupId>
     <artifactId>flume-ng-elasticsearch5.4-sink</artifactId>
     <name>Flume NG ElasticSearch Sink</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <properties>
         <elasticsearch-verison>5.4.1</elasticsearch-verison>
