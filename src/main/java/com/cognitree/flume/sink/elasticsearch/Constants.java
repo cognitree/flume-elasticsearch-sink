@@ -41,6 +41,7 @@ public class Constants {
     public static final String ES_INDEX_ID = "es.index.id";
 
     public static final String ES_INDEX_BUILDER = "es.index.builder";
+    public static final String DEFAULT_ES_INDEX_BUILDER = "com.cognitree.flume.sink.elasticsearch.SimpleIndexBuilder";
 
     public static final String ES_SERIALIZER_BUILDER = "es.serializer.builder";
     public static final String DEFAULT_ES_SERIALIZER_BUILDER = "com.cognitree.flume.sink.elasticsearch.SimpleSerializer";

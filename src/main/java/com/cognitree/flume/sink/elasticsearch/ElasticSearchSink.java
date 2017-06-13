@@ -16,6 +16,8 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
 /**
@@ -126,15 +128,16 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
      * builds the Index builder
      */
     private void buildIndexBuilder(Context context) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        String indexBuilderClass = DEFAULT_ES_INDEX_BUILDER;
         if (StringUtils.isNotBlank(context.getString(ES_INDEX_BUILDER))) {
-            String indexBuilderClass = context.getString(ES_INDEX_BUILDER);
+            indexBuilderClass = context.getString(ES_INDEX_BUILDER);
+        }
             @SuppressWarnings("unchecked")
             Class<? extends IndexBuilder> aClass
                     = (Class<? extends IndexBuilder>) Class
                     .forName(indexBuilderClass);
             indexBuilder = aClass.newInstance();
             indexBuilder.configure(context);
-        }
     }
 
     /**

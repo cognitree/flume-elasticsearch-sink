@@ -41,7 +41,7 @@ Required properties are in bold.
 | es.client.transport.nodes_sampler_interval | 5s           | How often to sample / ping the nodes listed and connected                                     |
 | es.index.name                              | defaultindex | Index name to be used to store the documents                                                  |
 | es.index.type                              | defaulttype  | Index type to be used to store the documents                                                  |
-| es.index.builder                           | -            | Implementation of com.cognitree.flume.sink.elasticsearch.IndexBuilder interface accepted      |
+| es.index.builder                           |com.cognitree.flume.sink.elasticsearch.SimpleIndexBuilder            | Implementation of com.cognitree.flume.sink.elasticsearch.IndexBuilder interface accepted      |
 | es.serializer.builder                      |com.cognitree.flume.sink.elasticsearch.SimpleSerializer            | Implementation of com.cognitree.flume.sink.elasticsearch.Serializer interface accepted |
 
 
