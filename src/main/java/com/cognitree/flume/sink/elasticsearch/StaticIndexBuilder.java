@@ -17,59 +17,55 @@ package com.cognitree.flume.sink.elasticsearch;
 
 import org.apache.flume.Context;
 import org.apache.flume.Event;
-
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
 /**
  * Created by prashant
- * <p>
- * This class create the index type and Id based on header
  */
-public class HeaderBasedIndexBuilder extends StaticIndexBuilder {
+public class StaticIndexBuilder implements IndexBuilder {
 
-    /**
-     * Returns the index name from the headers
-     */
+    private static final Logger logger = LoggerFactory.getLogger(StaticIndexBuilder.class);
+
+    private String index;
+
+    private String type;
+
     @Override
     public String getIndex(Event event) {
-        Map<String, String> headers = event.getHeaders();
         String index;
-        if (headers.get(INDEX) != null) {
-            index = headers.get(INDEX);
+        if (this.index != null) {
+            index = this.index;
         } else {
-            index = super.getIndex(event);
+            index = DEFAULT_ES_INDEX;
         }
         return index;
     }
 
-    /**
-     * Returns the index type from the headers
-     */
     @Override
     public String getType(Event event) {
-        Map<String, String> headers = event.getHeaders();
         String type;
-        if (headers.get(TYPE) != null) {
-            type = headers.get(TYPE);
+        if (this.type != null) {
+            type = this.type;
         } else {
-            type = super.getType(event);
+            type = DEFAULT_ES_TYPE;
         }
         return type;
     }
 
-    /**
-     * Returns the index Id from the headers.
-     */
     @Override
     public String getId(Event event) {
-        Map<String, String> headers = event.getHeaders();
-        return headers.get(ID);
+        return null;
     }
 
     @Override
     public void configure(Context context) {
-        super.configure(context);
+        this.index = Util.getContextValue(context, ES_INDEX);
+        this.type = Util.getContextValue(context, ES_TYPE);
+        logger.info("Simple Index builder, name [{}] type [{}] ",
+                new Object[]{this.index, this.type});
+
     }
 }

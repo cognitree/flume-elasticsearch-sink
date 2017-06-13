@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017 Cognitree Technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.cognitree.flume.sink.elasticsearch.client;
 
 import com.cognitree.flume.sink.elasticsearch.Util;
@@ -39,13 +54,14 @@ public class BulkProcessorBuilder {
     public BulkProcessor buildBulkProcessor(Context context, TransportClient client) {
         bulkActions = context.getInteger(ES_BULK_ACTIONS,
                 DEFAULT_ES_BULK_ACTIONS);
-        bulkProcessorName = context.getString(ES_BULK_PROCESSOR_NAME);
+        bulkProcessorName = context.getString(ES_BULK_PROCESSOR_NAME,
+                DEFAULT_ES_BULK_PROCESSOR_NAME);
         bulkSize = Util.getByteSizeValue(context.getInteger(ES_BULK_SIZE),
                 context.getString(ES_BULK_SIZE_UNIT));
         concurrentRequest = context.getInteger(ES_CONCURRENT_REQUEST,
                 DEFAULT_ES_CONCURRENT_REQUEST);
         flushIntervalTime = Util.getTimeValue(context.getString(ES_FLUSH_INTERVAL_TIME),
-                DEFAULT_ES_TIME);
+                DEFAULT_ES_FLUSH_INTERVAL_TIME);
         backoffPolicyTimeInterval = context.getString(ES_BACKOFF_POLICY_TIME_INTERVAL,
                 DEFAULT_ES_BACKOFF_POLICY_START_DELAY);
         backoffPolicyRetries = context.getInteger(ES_BACKOFF_POLICY_RETRIES,
