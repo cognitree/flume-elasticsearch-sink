@@ -16,6 +16,7 @@
 package com.cognitree.flume.sink.elasticsearch;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -39,7 +40,10 @@ public class CsvSerializer implements Serializer {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvSerializer.class);
 
-    private String fields;
+    private List<String> names = new ArrayList<String>();
+
+    private List<String> types = new ArrayList<String>();
+
     private String delimiter;
 
     /**
@@ -51,24 +55,19 @@ public class CsvSerializer implements Serializer {
         XContentBuilder xContentBuilder = null;
         String body = new String(event.getBody(), Charsets.UTF_8);
         try {
-            if (fields != null) {
+            if (!names.isEmpty() && !types.isEmpty()) {
                 xContentBuilder = jsonBuilder().startObject();
-                String[] fieldTypes = fields.split(COMMA);
-                List<String> names = new ArrayList<String>();
-                List<String> types = new ArrayList<String>();
-                for (String fieldType : fieldTypes) {
-                    names.add(getValue(fieldType, 0));
-                    types.add(getValue(fieldType,1));
-                }
                 List<String> values = Arrays.asList(body.split(delimiter));
                 for (int i = 0; i < names.size(); i++) {
                     Util.addField(xContentBuilder, names.get(i), values.get(i), types.get(i));
                 }
                 xContentBuilder.endObject();
+            } else {
+                logger.error("Fields for csv files are not configured, " +
+                        "please configured the property " + ES_CSV_FIELDS);
             }
         } catch (Exception e) {
             logger.error("Error in converting the body to the json format " + e.getMessage(), e);
-
         }
         return xContentBuilder;
     }
@@ -92,7 +91,20 @@ public class CsvSerializer implements Serializer {
      */
     @Override
     public void configure(Context context) {
-        fields = context.getString(ES_CSV_FIELDS);
-        delimiter = context.getString(ES_CSV_DELIMITER, DEFAULT_ES_CSV_DELIMITER);
+        String fields = context.getString(ES_CSV_FIELDS);
+        if(fields == null) {
+            Throwables.propagate(new Exception("Fields for csv files are not configured," +
+                    " please configured the property " + ES_CSV_FIELDS));
+        }
+        try {
+            delimiter = context.getString(ES_CSV_DELIMITER, DEFAULT_ES_CSV_DELIMITER);
+            String[] fieldTypes = fields.split(COMMA);
+            for (String fieldType : fieldTypes) {
+                names.add(getValue(fieldType, 0));
+                types.add(getValue(fieldType, 1));
+            }
+        } catch(Exception e) {
+            Throwables.propagate(e);
+        }
     }
 }

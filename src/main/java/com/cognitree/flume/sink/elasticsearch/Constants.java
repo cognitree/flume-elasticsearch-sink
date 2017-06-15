@@ -79,9 +79,11 @@ public class Constants {
     public static final String ES_TRANSPORT_PING_TIMEOUT = "client.transport.ping_timeout";
     public static final String ES_TRANSPORT_NODE_SAMPLER_INTERVAL = "client.transport.nodes_sampler_interval";
 
-    public static final String ES_CSV_FIELDS = "es.csv.fields";
-    public static final String ES_CSV_DELIMITER = "es.csv.delimiter";
+    public static final String ES_CSV_FIELDS = "es.serializer.csv.fields";
+    public static final String ES_CSV_DELIMITER = "es.serializer.csv.delimiter";
     public static final String DEFAULT_ES_CSV_DELIMITER = ",";
+
+    public static final String ES_AVRO_SCHEMA_FILE = "es.serializer.avro.schema.file";
 
     /**
      * This enum is used for the time unit
