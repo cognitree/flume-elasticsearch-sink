@@ -20,8 +20,11 @@ import org.apache.flume.Context;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
@@ -93,5 +96,30 @@ public class Util {
             contextValue = context.getString(contextId);
         }
         return contextValue;
+    }
+
+    /**
+     * Add csv field to the XContentBuilder
+     */
+    public static void addField(XContentBuilder xContentBuilder,String key, String value, String type) throws IOException{
+        if (type != null) {
+            FieldTypeEnum fieldTypeEnum = FieldTypeEnum.valueOf(type.toUpperCase());
+            switch (fieldTypeEnum) {
+                case STRING:
+                    xContentBuilder.field(key, value);
+                    break;
+                case FLOAT:
+                    xContentBuilder.field(key, Float.valueOf(value));
+                    break;
+                case INT:
+                    xContentBuilder.field(key, Integer.parseInt(value));
+                    break;
+                case BOOLEAN:
+                    xContentBuilder.field(key, Boolean.valueOf(value));
+                    break;
+                default:
+                    logger.error("Type is incorrect, please check type: " + type);
+            }
+        }
     }
 }

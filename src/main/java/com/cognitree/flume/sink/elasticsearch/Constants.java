@@ -20,6 +20,10 @@ package com.cognitree.flume.sink.elasticsearch;
  */
 public class Constants {
 
+    public static final String COMMA = ",";
+
+    public static final String COLONS = ":";
+
     public static final String PREFIX = "es.";
 
     public static final String INDEX = "index";
@@ -75,6 +79,10 @@ public class Constants {
     public static final String ES_TRANSPORT_PING_TIMEOUT = "client.transport.ping_timeout";
     public static final String ES_TRANSPORT_NODE_SAMPLER_INTERVAL = "client.transport.nodes_sampler_interval";
 
+    public static final String ES_CSV_FIELDS = "es.csv.fields";
+    public static final String ES_CSV_DELIMITER = "es.csv.delimiter";
+    public static final String DEFAULT_ES_CSV_DELIMITER = ",";
+
     /**
      * This enum is used for the time unit
      *
@@ -126,6 +134,28 @@ public class Constants {
         @Override
         public String toString() {
             return byteSizeUnit;
+        }
+    }
+
+    /**
+     *  Enum for field type
+     *
+     */
+    public enum FieldTypeEnum {
+        STRING("string"),
+        INT("int"),
+        FLOAT("float"),
+        BOOLEAN("boolean");
+
+        private String fieldType;
+
+        FieldTypeEnum(String fieldType) {
+            this.fieldType = fieldType;
+        }
+
+        @Override
+        public String toString() {
+            return fieldType;
         }
     }
 }

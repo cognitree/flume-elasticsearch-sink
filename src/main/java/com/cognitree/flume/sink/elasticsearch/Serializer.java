@@ -16,6 +16,7 @@
 package com.cognitree.flume.sink.elasticsearch;
 
 import org.apache.flume.Event;
+import org.apache.flume.conf.Configurable;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 
 /**
@@ -23,7 +24,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
  * A single instance of the class is created when the Sink initializes and is destroyed when the Sink is stopped.
  *
  */
-public interface Serializer {
+public interface Serializer extends Configurable {
 
     /**
      * Serialize the body of the event to

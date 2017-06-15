@@ -134,9 +134,10 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
         if (StringUtils.isNotBlank(context.getString(ES_INDEX_BUILDER))) {
             indexBuilderClass = context.getString(ES_INDEX_BUILDER);
         }
-        indexBuilder = instantiateClass(indexBuilderClass);
-        if (indexBuilder != null)
-            indexBuilder.configure(context);
+        this.indexBuilder = instantiateClass(indexBuilderClass);
+        if (this.indexBuilder != null) {
+            this.indexBuilder.configure(context);
+        }
     }
 
     /**
@@ -148,6 +149,9 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
             serializerClass = context.getString(ES_SERIALIZER);
         }
         this.serializer = instantiateClass(serializerClass);
+        if(this.serializer != null) {
+            this.serializer.configure(context);
+        }
     }
 
     private <T> T instantiateClass(String className) {
