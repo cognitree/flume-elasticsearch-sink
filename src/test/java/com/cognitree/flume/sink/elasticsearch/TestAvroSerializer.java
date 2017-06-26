@@ -86,8 +86,7 @@ public class TestAvroSerializer {
     @Test
     public void testSerializer() throws Exception {
         Context context = new Context();
-        String path = System.getProperty("user.dir");
-        String schemaFile = path + "/schema.avsc";
+        String schemaFile = getClass().getResource("/schema.avsc").getFile();
         context.put(ES_AVRO_SCHEMA_FILE, schemaFile);
         avroSerializer.configure(context);
         Schema schema = new Schema.Parser().parse(new File(schemaFile));

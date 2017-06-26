@@ -40,9 +40,9 @@ public class CsvSerializer implements Serializer {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvSerializer.class);
 
-    private List<String> names = new ArrayList<String>();
+    private final List<String> names = new ArrayList<String>();
 
-    private List<String> types = new ArrayList<String>();
+    private final List<String> types = new ArrayList<String>();
 
     private String delimiter;
 

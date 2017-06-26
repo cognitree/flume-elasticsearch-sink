@@ -65,7 +65,8 @@ public class AvroSerializer implements Serializer {
                 logger.error("Schema File is not configured");
             }
         } catch (IOException e) {
-            logger.error("Error in parsing avro format data ", e.getMessage(), e);
+            logger.error("Exception in parsing avro format data but continuing serialization to process further records",
+                    e.getMessage(), e);
         }
         return builder;
     }
