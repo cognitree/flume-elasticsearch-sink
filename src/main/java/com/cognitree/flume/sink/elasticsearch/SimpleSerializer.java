@@ -16,6 +16,7 @@
 package com.cognitree.flume.sink.elasticsearch;
 
 import com.google.common.base.Charsets;
+import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.elasticsearch.common.xcontent.*;
 import org.slf4j.Logger;
@@ -47,5 +48,10 @@ public class SimpleSerializer implements Serializer {
             logger.error("Error in Converting the body to json field " + e.getMessage(), e);
         }
         return builder;
+    }
+
+    @Override
+    public void configure(Context context) {
+        // No parameters needed from the configurations
     }
 }

@@ -42,9 +42,12 @@ Required properties are in bold.
 | es.type                                    | default        | Type to be used to store the documents                                                        |
 | es.index.builder                           |com.cognitree.<br>flume.sink.<br>elasticsearch.<br>StaticIndexBuilder          | Implementation of com.cognitree.flume.sink.elasticsearch.IndexBuilder interface |
 | es.serializer                              |com.cognitree.<br>flume.sink.<br>elasticsearch.<br>SimpleSerializer            | Implementation of com.cognitree.flume.sink.elasticsearch.Serializer interface |
-
+| es.serializer.csv.fields                   | -              | Comma separated csv field name with data type i.e. column1:type1,column2:type2, Supported data types are string, boolean, int and float |
+| es.serializer.csv.delimiter                | ,(comma)       | Delimiter for the data in flume event body|
+| es.serializer.avro.schema.file             | -              | Absolute path for the schema configuration file |
 
 Example of agent named agent
+
 ````
   agent.channels = es_channel
   agent.sinks = es_sink
@@ -68,4 +71,7 @@ Example of agent named agent
   agent.sinks.es_sink.es.index.type=defaulttype
   agent.sinks.es_sink.es.index.builder=com.cognitree.flume.sink.elasticsearch.HeaderBasedIndexBuilder
   agent.sinks.es_sink.es.serializer=com.cognitree.flume.sink.elasticsearch.SimpleSerializer
+  agent.sinks.es_sink.es.serializer.csv.fields=id:int,name:string,isemployee:boolean,leaves:float
+  agent.sinks.es_sink.es.serializer.csv.delimiter=,
+  agent.sinks.es_sink.es.serializer.avro.schema.file=/usr/local/schema.avsc
 ````
