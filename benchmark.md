@@ -3,32 +3,32 @@ The following is the result of a benchmarking test conducted.
 
 ### Setup
 #### Hardware specs
-Make: Apple Macbook Pro
-CPU: Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz(4 physical cores)
-RAM: 16GB
-SSD: 256GB
+ - Make: Apple Macbook Pro
+ - CPU: Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz(4 physical cores)
+ - RAM: 16GB
+ - SSD: 256GB
 
 #### JVM
 All processes used the same JVM with default GC settings.
 Java version: 1.8.0_101
 
 #### Flume configuration
-Cluster size: 1
-Heap size: 512MB
-Elasticsearch Sink:
- - Max bulk count: 10000
- - Max bulk size: 5 MB
- - Max bulk request interval: 10s
+ - Cluster size: 1
+ - Heap size: 512MB
+ - Elasticsearch Sink:
+    - Max bulk count: 10000
+    - Max bulk size: 5 MB
+    - Max bulk request interval: 10s
 
 #### Elasticsearch configuration
-Cluster size: 1
-Heap size: 2GB
-Index was pre-created and rest of the configurations were defaults
+ - Cluster size: 1
+ - Heap size: 2GB
+ - Index was pre-created and rest of the configurations were defaults
 
 #### Kafka configuration
-Cluster size: 1
-Heap size: 2GB
-No of partitions: 25
+ - Cluster size: 1
+ - Heap size: 2GB
+ - No of partitions: 25
 
 ### Test spec
 The entire dataset was stored into a Kafka topic before the test. A Flume agent was configured to consume data from this kafka topic and index them into Elasticsearch. The benchmarking metrics below only indicate the times taken to consume from this readily available data on Kafka topic into Elasticsearch.
