@@ -1,32 +1,46 @@
-#### Overview
- Flume process took the data from kafka topic and stored that inside elastic search configured index.
-All the processes(i.e. Flume, Kafka and Elastic search) were running on same hardware specs mentioned.
+## Benchmarks
+The following is the result of a benchmarking test conducted.
 
+### Setup
 #### Hardware specs
+Make: Apple Macbook Pro
 CPU: Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz(4 physical cores)
-Memory: 16GB
+RAM: 16GB
+SSD: 256GB
+
+#### JVM
+All processes used the same JVM with default GC settings.
+Java version: 1.8.0_101
 
 #### Flume configuration
-Java version: 1.8.0_101       
-Java heap size: 512MB
+Cluster size: 1
+Heap size: 512MB
+Elasticsearch Sink:
+ - Max bulk count: 10000
+ - Max bulk size: 5 MB
+ - Max bulk request interval: 10s
 
-#### Elastic search configuration
-Java version: 1.8.0_101    
-Java heap size: 2GB
+#### Elasticsearch configuration
+Cluster size: 1
+Heap size: 2GB
+Index was pre-created and rest of the configurations were defaults
 
 #### Kafka configuration
-Java version: 1.8.0_101    
-Java heap size: 2GB       
-Number of partitions: 25
+Cluster size: 1
+Heap size: 2GB
+No of partitions: 25
 
-#### Summary analysis for csv data
-Record size: 45.54 bytes.  
-Duration: The load test ran for 15 minutes 47 seconds.      
-Result: Total events sent: 33,003,944; No lost events.    
-Serializer: com.cognitree.flume.sink.elasticsearch.CsvSerializer
+### Test spec
+The entire dataset was stored into a Kafka topic before the test. A Flume agent was configured to consume data from this kafka topic and index them into Elasticsearch. The benchmarking metrics below only indicate the times taken to consume from this readily available data on Kafka topic into Elasticsearch.
 
-#### Summary analysis for json data
-Record size: 97.60 bytes.    
-Duration: The load test ran for 15 minutes 19 seconds.   
-Result: Total events sent: 33,003,944; No lost events.   
-Serializer: com.cognitree.flume.sink.elasticsearch.SimpleSerializer
+All the processes (i.e. Flume, Kafka and Elasticsearch) were running on same instance during the test.
+
+#### Test 1: Data is already in JSON format
+ - Serializer (in Sink plugin): com.cognitree.flume.sink.elasticsearch.SimpleSerializer
+ - Record size: 97.60 bytes
+ - Result: It took 15 minutes 19 seconds to index 33,003,944 records into Elasticsearch; No lost events
+
+#### Test 2: Data is available in csv format but needs to be converted to JSON before indexing
+ - Serializer (in Sink plugin): com.cognitree.flume.sink.elasticsearch.CsvSerializer
+ - Record size: 45.54 bytes
+ - Result: It took 15 minutes 47 seconds to index 33,003,944 records into Elasticsearch; No lost events
