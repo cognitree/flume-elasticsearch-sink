@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.cognitree.flume.sink.elasticsearch.Constants.ES_AVRO_SCHEMA_FILE;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -42,8 +44,9 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 public class AvroSerializer implements Serializer {
 
     private static final Logger logger = LoggerFactory.getLogger(AvroSerializer.class);
+    public static final String PATH_TO_FILE = "/Users/sumits/Documents/avscFolder/";
 
-    private DatumReader<GenericRecord> datumReader;
+    private Map<String, DatumReader<GenericRecord>> fileToDatumReaderMap = new HashMap<String, DatumReader<GenericRecord>>();
 
     /**
      * Converts the avro binary data to the json format
@@ -51,23 +54,34 @@ public class AvroSerializer implements Serializer {
     @Override
     public XContentBuilder serialize(Event event) {
         XContentBuilder builder = null;
+        String basename = event.getHeaders().get("basename").split("\\.")[0];
         try {
-            if (datumReader != null) {
-                Decoder decoder = new DecoderFactory().binaryDecoder(event.getBody(), null);
-                GenericRecord data = datumReader.read(null, decoder);
-                logger.trace("Record in event " + data);
-                XContentParser parser = XContentFactory
-                        .xContent(XContentType.JSON)
-                        .createParser(NamedXContentRegistry.EMPTY, data.toString());
-                builder = jsonBuilder().copyCurrentStructure(parser);
-                parser.close();
-            } else {
-                logger.error("Schema File is not configured");
+            if (!fileToDatumReaderMap.containsKey(basename)) {
+                Schema schema = new Schema.Parser().parse(new File(PATH_TO_FILE + basename + ".avsc"));
+                DatumReader<GenericRecord> datumReader = new GenericDatumReader<GenericRecord>(schema);
+                fileToDatumReaderMap.put(basename, datumReader);
             }
+        } catch (IOException e) {
+            logger.error("Error in parsing schema file ", e.getMessage(), e);
+            Throwables.propagate(e);
+        }
+
+        Decoder decoder = new DecoderFactory().binaryDecoder(event.getBody(), null);
+        DatumReader<GenericRecord> datumReader = fileToDatumReaderMap.get(basename);
+
+        try {
+            GenericRecord data = datumReader.read(null, decoder);
+            logger.trace("Record in event " + data);
+            XContentParser parser = XContentFactory
+                    .xContent(XContentType.JSON)
+                    .createParser(NamedXContentRegistry.EMPTY, data.toString());
+            builder = jsonBuilder().copyCurrentStructure(parser);
+            parser.close();
         } catch (IOException e) {
             logger.error("Exception in parsing avro format data but continuing serialization to process further records",
                     e.getMessage(), e);
         }
+
         return builder;
     }
 
@@ -80,7 +94,6 @@ public class AvroSerializer implements Serializer {
         }
         try {
             Schema schema = new Schema.Parser().parse(new File(file));
-            datumReader = new GenericDatumReader<GenericRecord>(schema);
         } catch (IOException e) {
             logger.error("Error in parsing schema file ", e.getMessage(), e);
             Throwables.propagate(e);
