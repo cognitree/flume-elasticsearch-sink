@@ -17,6 +17,7 @@ package com.cognitree.flume.sink.elasticsearch;
 
 import com.google.common.base.Throwables;
 import org.apache.avro.Schema;
+import org.apache.avro.file.DataFileReader;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumReader;
@@ -44,7 +45,6 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 public class AvroSerializer implements Serializer {
 
     private static final Logger logger = LoggerFactory.getLogger(AvroSerializer.class);
-    public static final String PATH_TO_FILE = "/Users/sumits/Documents/avscFolder/";
 
     private Map<String, DatumReader<GenericRecord>> fileToDatumReaderMap = new HashMap<String, DatumReader<GenericRecord>>();
 
@@ -54,10 +54,10 @@ public class AvroSerializer implements Serializer {
     @Override
     public XContentBuilder serialize(Event event) {
         XContentBuilder builder = null;
-        String basename = event.getHeaders().get("basename").split("\\.")[0];
+        String basename = event.getHeaders().get("eventType");
         try {
             if (!fileToDatumReaderMap.containsKey(basename)) {
-                Schema schema = new Schema.Parser().parse(new File(PATH_TO_FILE + basename + ".avsc"));
+                Schema schema = new Schema.Parser().parse(new File(event.getHeaders().get("eventSchemaPath")));
                 DatumReader<GenericRecord> datumReader = new GenericDatumReader<GenericRecord>(schema);
                 fileToDatumReaderMap.put(basename, datumReader);
             }
