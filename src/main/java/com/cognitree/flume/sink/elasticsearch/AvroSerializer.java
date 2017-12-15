@@ -50,6 +50,8 @@ public class AvroSerializer implements Serializer {
 
     private DatumReader<GenericRecord> datumReader;
 
+    private Map<String, DatumReader<GenericRecord>> hashValueToDatumReaderMap;
+
     /**
      * Converts the avro binary data to the json format
      */
@@ -64,8 +66,14 @@ public class AvroSerializer implements Serializer {
                 Schema schema = new Schema.Parser().parse((event.getHeaders().get("flume.avro.schema.literal")));
                 DatumReader<GenericRecord> datumReader = new GenericDatumReader<GenericRecord>(schema);
                 data = datumReader.read(null, decoder);
+                hashValueToDatumReaderMap.put(event.getHeaders().get("flume.avro.schema.hash"), datumReader);
             } else {
-                data = datumReader.read(null, decoder);
+                if(hashValueToDatumReaderMap.containsKey(event.getHeaders().get("flume.avro.schema.hash"))) {
+                    DatumReader<GenericRecord> datumReader = hashValueToDatumReaderMap.get(event.getHeaders().get("flume.avro.schema.hash"));
+                    data = datumReader.read(null, decoder);
+                } else {
+                    data = datumReader.read(null, decoder);
+                }
             }
 
             logger.trace("Record in event " + data);
@@ -95,6 +103,7 @@ public class AvroSerializer implements Serializer {
         try {
             Schema schema = new Schema.Parser().parse(new File(file));
             datumReader = new GenericDatumReader<GenericRecord>(schema);
+            hashValueToDatumReaderMap = new HashMap<String, DatumReader<GenericRecord>>();
         } catch (IOException e) {
             logger.error("Error in parsing schema file ", e.getMessage(), e);
             Throwables.propagate(e);
