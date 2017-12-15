@@ -60,6 +60,8 @@ public class Constants {
     public static final String ES_TYPE = "es.type";
     public static final String DEFAULT_ES_TYPE = "default";
 
+    public static final String ES_ID = "es.id";
+
     public static final String ES_INDEX_BUILDER = "es.index.builder";
     public static final String DEFAULT_ES_INDEX_BUILDER = "com.cognitree.flume.sink.elasticsearch.StaticIndexBuilder";
 
