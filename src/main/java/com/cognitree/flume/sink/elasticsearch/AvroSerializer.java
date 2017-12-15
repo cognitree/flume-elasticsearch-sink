@@ -50,8 +50,6 @@ public class AvroSerializer implements Serializer {
 
     private DatumReader<GenericRecord> datumReader;
 
-    private static final ObjectMapper objectMapper= new ObjectMapper();
-
     /**
      * Converts the avro binary data to the json format
      */
@@ -76,11 +74,7 @@ public class AvroSerializer implements Serializer {
                     .createParser(NamedXContentRegistry.EMPTY, data.toString());
             builder = jsonBuilder().copyCurrentStructure(parser);
 
-            JsonNode dataNode = objectMapper.readTree(builder.string());
-
-            System.out.println("BUILDER STRING: " + builder.string());
-            event.getHeaders().put("index", dataNode.get("es_index").getTextValue());
-            event.getHeaders().put("type", dataNode.get("es_type").getTextValue());
+            event.setBody(builder.string().getBytes());
 
             parser.close();
         } catch (IOException e) {
