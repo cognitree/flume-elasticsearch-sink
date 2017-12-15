@@ -54,16 +54,12 @@ public class AvroSerializer implements Serializer {
     @Override
     public XContentBuilder serialize(Event event) {
         XContentBuilder builder = null;
-        String basename = event.getHeaders().get("eventType");
-        try {
-            if (!fileToDatumReaderMap.containsKey(basename)) {
-                Schema schema = new Schema.Parser().parse(new File(event.getHeaders().get("eventSchemaPath")));
-                DatumReader<GenericRecord> datumReader = new GenericDatumReader<GenericRecord>(schema);
-                fileToDatumReaderMap.put(basename, datumReader);
-            }
-        } catch (IOException e) {
-            logger.error("Error in parsing schema file ", e.getMessage(), e);
-            Throwables.propagate(e);
+        String basename = event.getHeaders().get("type");
+
+        if (!fileToDatumReaderMap.containsKey(basename)) {
+            Schema schema = new Schema.Parser().parse((event.getHeaders().get("schemaString")));
+            DatumReader<GenericRecord> datumReader = new GenericDatumReader<GenericRecord>(schema);
+            fileToDatumReaderMap.put(basename, datumReader);
         }
 
         Decoder decoder = new DecoderFactory().binaryDecoder(event.getBody(), null);
@@ -76,6 +72,7 @@ public class AvroSerializer implements Serializer {
                     .xContent(XContentType.JSON)
                     .createParser(NamedXContentRegistry.EMPTY, data.toString());
             builder = jsonBuilder().copyCurrentStructure(parser);
+
             parser.close();
         } catch (IOException e) {
             logger.error("Exception in parsing avro format data but continuing serialization to process further records",
