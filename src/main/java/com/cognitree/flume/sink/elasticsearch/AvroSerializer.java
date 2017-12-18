@@ -17,7 +17,6 @@ package com.cognitree.flume.sink.elasticsearch;
 
 import com.google.common.base.Throwables;
 import org.apache.avro.Schema;
-import org.apache.avro.file.DataFileReader;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumReader;
@@ -25,8 +24,6 @@ import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.common.xcontent.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +47,7 @@ public class AvroSerializer implements Serializer {
 
     private DatumReader<GenericRecord> datumReader;
 
-    private Map<String, DatumReader<GenericRecord>> hashValueToDatumReaderMap;
+    private Map<String, DatumReader<GenericRecord>> avroHashSchemaToDatumReaderMap;
 
     /**
      * Converts the avro binary data to the json format
@@ -66,10 +63,10 @@ public class AvroSerializer implements Serializer {
                 Schema schema = new Schema.Parser().parse((event.getHeaders().get("flume.avro.schema.literal")));
                 DatumReader<GenericRecord> datumReader = new GenericDatumReader<GenericRecord>(schema);
                 data = datumReader.read(null, decoder);
-                hashValueToDatumReaderMap.put(event.getHeaders().get("flume.avro.schema.hash"), datumReader);
+                avroHashSchemaToDatumReaderMap.put(event.getHeaders().get("flume.avro.schema.hash"), datumReader);
             } else {
-                if(hashValueToDatumReaderMap.containsKey(event.getHeaders().get("flume.avro.schema.hash"))) {
-                    DatumReader<GenericRecord> datumReader = hashValueToDatumReaderMap.get(event.getHeaders().get("flume.avro.schema.hash"));
+                if(avroHashSchemaToDatumReaderMap.containsKey(event.getHeaders().get("flume.avro.schema.hash"))) {
+                    DatumReader<GenericRecord> datumReader = avroHashSchemaToDatumReaderMap.get(event.getHeaders().get("flume.avro.schema.hash"));
                     data = datumReader.read(null, decoder);
                 } else {
                     data = datumReader.read(null, decoder);
@@ -103,7 +100,7 @@ public class AvroSerializer implements Serializer {
         try {
             Schema schema = new Schema.Parser().parse(new File(file));
             datumReader = new GenericDatumReader<GenericRecord>(schema);
-            hashValueToDatumReaderMap = new HashMap<String, DatumReader<GenericRecord>>();
+            avroHashSchemaToDatumReaderMap = new HashMap<String, DatumReader<GenericRecord>>();
         } catch (IOException e) {
             logger.error("Error in parsing schema file ", e.getMessage(), e);
             Throwables.propagate(e);

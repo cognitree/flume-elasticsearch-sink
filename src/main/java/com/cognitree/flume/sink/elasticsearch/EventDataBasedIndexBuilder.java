@@ -11,17 +11,23 @@ import java.io.IOException;
 
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
-public class BodyBasedIndexBuilder implements IndexBuilder {
+/**
+ * Creates Index, type and id based on the event data.
+ */
+public class EventDataBasedIndexBuilder implements IndexBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(BodyBasedIndexBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(EventDataBasedIndexBuilder.class);
 
     private static final ObjectMapper objectMapper= new ObjectMapper();
-
 
     private String eventIndexIdentifier;
     private String eventTypeIdentifier;
     private String eventIdIdentifier;
 
+    /**
+     * Get the field identified by eventIndexIdentifier and returns its value as index name. If the field is absent
+     * then returns default index value.
+     */
     @Override
     public String getIndex(Event event) {
         try {
@@ -36,6 +42,10 @@ public class BodyBasedIndexBuilder implements IndexBuilder {
         return DEFAULT_ES_INDEX;
     }
 
+    /**
+     * Get the field identified by eventTypeIdentifier and returns its value as type name. If the field is absent
+     * then returns default type value.
+     */
     @Override
     public String getType(Event event) {
         try {
@@ -50,6 +60,10 @@ public class BodyBasedIndexBuilder implements IndexBuilder {
         return DEFAULT_ES_TYPE;
     }
 
+    /**
+     * Get the field identified by eventIdIdentifier and returns its value as type name. If the field is absent
+     * then returns value obtained from header for ID.
+     */
     @Override
     public String getId(Event event) {
         try {
