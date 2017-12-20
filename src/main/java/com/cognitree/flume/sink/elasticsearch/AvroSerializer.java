@@ -45,6 +45,9 @@ public class AvroSerializer implements Serializer {
 
     private static final Logger logger = LoggerFactory.getLogger(AvroSerializer.class);
 
+    private static final String FLUME_AVRO_SCHEMA_STRING_HEADER_FIELD = "flume.avro.schema.literal";
+    private static final String FLUME_AVRO_SCHEMA_HASH_HEADER_FIELD = "flume.avro.schema.hash";
+
     private DatumReader<GenericRecord> defaultDatumReader;
 
     private Map<String, DatumReader<GenericRecord>> avroHashSchemaToDatumReaderMap;
@@ -79,13 +82,14 @@ public class AvroSerializer implements Serializer {
     }
 
     private DatumReader<GenericRecord> getDatumReader(Event event) {
-        if(event.getHeaders().containsKey("flume.avro.schema.literal")) {
-            Schema schema = new Schema.Parser().parse((event.getHeaders().get("flume.avro.schema.literal")));
+        if(event.getHeaders().containsKey(FLUME_AVRO_SCHEMA_STRING_HEADER_FIELD)) {
+            Schema schema = new Schema.Parser().parse((event.getHeaders().get(FLUME_AVRO_SCHEMA_STRING_HEADER_FIELD)));
             DatumReader<GenericRecord> datumReader = new GenericDatumReader<GenericRecord>(schema);
-            avroHashSchemaToDatumReaderMap.put(event.getHeaders().get("flume.avro.schema.hash"), datumReader);
+            avroHashSchemaToDatumReaderMap.put(event.getHeaders().get(FLUME_AVRO_SCHEMA_HASH_HEADER_FIELD), datumReader);
             return datumReader;
         } else {
-            return avroHashSchemaToDatumReaderMap.getOrDefault(event.getHeaders().get("flume.avro.schema.hash"), defaultDatumReader);
+            return avroHashSchemaToDatumReaderMap.getOrDefault(event.getHeaders().get(
+                    FLUME_AVRO_SCHEMA_HASH_HEADER_FIELD), defaultDatumReader);
         }
     }
 
