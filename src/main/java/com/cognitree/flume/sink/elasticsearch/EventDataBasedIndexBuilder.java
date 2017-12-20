@@ -15,10 +15,15 @@
  */
 package com.cognitree.flume.sink.elasticsearch;
 
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.DatumReader;
+import org.apache.avro.io.Decoder;
+import org.apache.avro.io.DecoderFactory;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +44,8 @@ public class EventDataBasedIndexBuilder implements IndexBuilder {
     private String typeField;
     private String idField;
 
+    private AvroSerializer avroSerializer;
+
     /**
      * Get the field identified by indexField and returns its value as index name. If the field is absent
      * then returns default index value.
@@ -46,10 +53,12 @@ public class EventDataBasedIndexBuilder implements IndexBuilder {
     @Override
     public String getIndex(Event event) {
         try {
-            JsonNode dataNode = objectMapper.readTree(new String(event.getBody()));
-            JsonNode eventIndexNode = dataNode.get(indexField);
-            if(eventIndexNode != null) {
-                return eventIndexNode.asText();
+            Decoder decoder = new DecoderFactory().binaryDecoder(event.getBody(), null);
+            DatumReader<GenericRecord> datumReader = avroSerializer.getDatumReader(event);
+            GenericRecord data = datumReader.read(null, decoder);
+
+            if(data.get(indexField) != null) {
+                return data.get(indexField).toString();
             }
         } catch (IOException e) {
             logger.error("Error parsing logger body", e);
@@ -64,10 +73,12 @@ public class EventDataBasedIndexBuilder implements IndexBuilder {
     @Override
     public String getType(Event event) {
         try {
-            JsonNode dataNode = objectMapper.readTree(new String(event.getBody()));
-            JsonNode eventTypeNode = dataNode.get(typeField);
-            if(eventTypeNode != null) {
-                return eventTypeNode.asText();
+            Decoder decoder = new DecoderFactory().binaryDecoder(event.getBody(), null);
+            DatumReader<GenericRecord> datumReader = avroSerializer.getDatumReader(event);
+            GenericRecord data = datumReader.read(null, decoder);
+
+            if(data.get(typeField) != null) {
+                return data.get(typeField).toString();
             }
         } catch (IOException e) {
             logger.error("Error parsing logger body", e);
@@ -82,10 +93,12 @@ public class EventDataBasedIndexBuilder implements IndexBuilder {
     @Override
     public String getId(Event event) {
         try {
-            JsonNode dataNode = objectMapper.readTree(new String(event.getBody()));
-            JsonNode eventIdNode = dataNode.get(idField);
-            if(eventIdNode != null) {
-                return eventIdNode.asText();
+            Decoder decoder = new DecoderFactory().binaryDecoder(event.getBody(), null);
+            DatumReader<GenericRecord> datumReader = avroSerializer.getDatumReader(event);
+            GenericRecord data = datumReader.read(null, decoder);
+
+            if(data.get(idField) != null) {
+                return data.get(idField).toString();
             }
         } catch (IOException e) {
             logger.error("Error parsing logger body", e);
@@ -101,5 +114,7 @@ public class EventDataBasedIndexBuilder implements IndexBuilder {
         logger.info("Simple Index builder, name [{}] typeIdentifier [{}] id [[]]",
                 new Object[]{this.indexField, this.typeField, this.idField});
 
+        avroSerializer = new AvroSerializer();
+        avroSerializer.configure(context);
     }
 }

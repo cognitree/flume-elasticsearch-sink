@@ -50,7 +50,8 @@ public class AvroSerializer implements Serializer {
 
     private DatumReader<GenericRecord> defaultDatumReader;
 
-    private Map<String, DatumReader<GenericRecord>> avroHashSchemaToDatumReaderMap;
+    // avro schema hash string to datum reader map
+    private Map<String, DatumReader<GenericRecord>> hashToReaderMap;
 
     /**
      * Converts the avro binary data to the json format
@@ -70,24 +71,22 @@ public class AvroSerializer implements Serializer {
                     .xContent(XContentType.JSON)
                     .createParser(NamedXContentRegistry.EMPTY, data.toString())) {
                 builder = jsonBuilder().copyCurrentStructure(parser);
-                event.setBody(builder.string().getBytes());
             }
         } catch (IOException e) {
             logger.error("Exception in parsing avro format data but continuing serialization to process further records",
                     e.getMessage(), e);
         }
-
         return builder;
     }
 
-    private DatumReader<GenericRecord> getDatumReader(Event event) {
+    DatumReader<GenericRecord> getDatumReader(Event event) {
         if(event.getHeaders().containsKey(FLUME_AVRO_SCHEMA_STRING_HEADER_FIELD)) {
             Schema schema = new Schema.Parser().parse((event.getHeaders().get(FLUME_AVRO_SCHEMA_STRING_HEADER_FIELD)));
             DatumReader<GenericRecord> datumReader = new GenericDatumReader<GenericRecord>(schema);
-            avroHashSchemaToDatumReaderMap.put(event.getHeaders().get(FLUME_AVRO_SCHEMA_HASH_HEADER_FIELD), datumReader);
+            hashToReaderMap.put(event.getHeaders().get(FLUME_AVRO_SCHEMA_HASH_HEADER_FIELD), datumReader);
             return datumReader;
         } else {
-            return avroHashSchemaToDatumReaderMap.getOrDefault(event.getHeaders().get(
+            return hashToReaderMap.getOrDefault(event.getHeaders().get(
                     FLUME_AVRO_SCHEMA_HASH_HEADER_FIELD), defaultDatumReader);
         }
     }
@@ -102,7 +101,7 @@ public class AvroSerializer implements Serializer {
         try {
             Schema schema = new Schema.Parser().parse(new File(file));
             defaultDatumReader = new GenericDatumReader<GenericRecord>(schema);
-            avroHashSchemaToDatumReaderMap = new HashMap<String, DatumReader<GenericRecord>>();
+            hashToReaderMap = new HashMap<String, DatumReader<GenericRecord>>();
         } catch (IOException e) {
             logger.error("Error in parsing schema file ", e.getMessage(), e);
             Throwables.propagate(e);
