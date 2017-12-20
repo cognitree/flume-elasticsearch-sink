@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017 Cognitree Technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.cognitree.flume.sink.elasticsearch;
 
 import org.apache.flume.Context;
@@ -20,19 +35,19 @@ public class EventDataBasedIndexBuilder implements IndexBuilder {
 
     private static final ObjectMapper objectMapper= new ObjectMapper();
 
-    private String eventIndexIdentifier;
-    private String eventTypeIdentifier;
-    private String eventIdIdentifier;
+    private String indexField;
+    private String typeField;
+    private String idField;
 
     /**
-     * Get the field identified by eventIndexIdentifier and returns its value as index name. If the field is absent
+     * Get the field identified by indexField and returns its value as index name. If the field is absent
      * then returns default index value.
      */
     @Override
     public String getIndex(Event event) {
         try {
             JsonNode dataNode = objectMapper.readTree(new String(event.getBody()));
-            JsonNode eventIndexNode = dataNode.get(eventIndexIdentifier);
+            JsonNode eventIndexNode = dataNode.get(indexField);
             if(eventIndexNode != null) {
                 return eventIndexNode.asText();
             }
@@ -43,14 +58,14 @@ public class EventDataBasedIndexBuilder implements IndexBuilder {
     }
 
     /**
-     * Get the field identified by eventTypeIdentifier and returns its value as type name. If the field is absent
+     * Get the field identified by typeField and returns its value as type name. If the field is absent
      * then returns default type value.
      */
     @Override
     public String getType(Event event) {
         try {
             JsonNode dataNode = objectMapper.readTree(new String(event.getBody()));
-            JsonNode eventTypeNode = dataNode.get(eventTypeIdentifier);
+            JsonNode eventTypeNode = dataNode.get(typeField);
             if(eventTypeNode != null) {
                 return eventTypeNode.asText();
             }
@@ -61,14 +76,14 @@ public class EventDataBasedIndexBuilder implements IndexBuilder {
     }
 
     /**
-     * Get the field identified by eventIdIdentifier and returns its value as type name. If the field is absent
+     * Get the field identified by idField and returns its value as type name. If the field is absent
      * then returns value obtained from header for ID.
      */
     @Override
     public String getId(Event event) {
         try {
             JsonNode dataNode = objectMapper.readTree(new String(event.getBody()));
-            JsonNode eventIdNode = dataNode.get(eventIdIdentifier);
+            JsonNode eventIdNode = dataNode.get(idField);
             if(eventIdNode != null) {
                 return eventIdNode.asText();
             }
@@ -80,11 +95,11 @@ public class EventDataBasedIndexBuilder implements IndexBuilder {
 
     @Override
     public void configure(Context context) {
-        this.eventIndexIdentifier = Util.getContextValue(context, ES_INDEX);
-        this.eventTypeIdentifier = Util.getContextValue(context, ES_TYPE);
-        this.eventIdIdentifier = Util.getContextValue(context, ES_ID);
+        this.indexField = Util.getContextValue(context, ES_INDEX);
+        this.typeField = Util.getContextValue(context, ES_TYPE);
+        this.idField = Util.getContextValue(context, ES_ID);
         logger.info("Simple Index builder, name [{}] typeIdentifier [{}] id [[]]",
-                new Object[]{this.eventIndexIdentifier, this.eventTypeIdentifier, this.eventIdIdentifier});
+                new Object[]{this.indexField, this.typeField, this.idField});
 
     }
 }
