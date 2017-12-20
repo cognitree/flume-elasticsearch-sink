@@ -65,14 +65,13 @@ public class AvroSerializer implements Serializer {
             GenericRecord data = datumReader.read(null, decoder);
 
             logger.trace("Record in event " + data);
-            XContentParser parser = XContentFactory
+
+            try (XContentParser parser = XContentFactory
                     .xContent(XContentType.JSON)
-                    .createParser(NamedXContentRegistry.EMPTY, data.toString());
-            builder = jsonBuilder().copyCurrentStructure(parser);
-
-            event.setBody(builder.string().getBytes());
-
-            parser.close();
+                    .createParser(NamedXContentRegistry.EMPTY, data.toString())) {
+                builder = jsonBuilder().copyCurrentStructure(parser);
+                event.setBody(builder.string().getBytes());
+            }
         } catch (IOException e) {
             logger.error("Exception in parsing avro format data but continuing serialization to process further records",
                     e.getMessage(), e);
