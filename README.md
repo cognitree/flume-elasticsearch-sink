@@ -14,7 +14,7 @@ Follow these steps to use this sink in Apache flume:
 
 `mvn clean assembly:assembly`
 
-* Extract the file into the flume installation directories plugin.d folder.
+* Extract the file into the flume installation directories plugins.d folder.
 
 * Configure the sink in the flume configuration file with properties as below
 
