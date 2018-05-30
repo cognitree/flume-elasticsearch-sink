@@ -75,7 +75,6 @@ public class BulkProcessorBuilder {
                 new Object[]{bulkProcessorName, bulkActions, bulkSize, flushIntervalTime,
                         concurrentRequest, backoffPolicyTimeInterval, backoffPolicyRetries});
         return BulkProcessor.builder(client, getListener())
-                .setName(bulkProcessorName)
                 .setBulkActions(bulkActions)
                 .setBulkSize(bulkSize)
                 .setFlushInterval(flushIntervalTime)
@@ -101,7 +100,7 @@ public class BulkProcessorBuilder {
                                   BulkRequest request,
                                   BulkResponse response) {
                 logger.trace("Bulk execution completed [" + executionId + "]\n" +
-                        "Took (ms): " + response.getTookInMillis() + "\n" +
+                        "Took (ms): " + response.getTook().getMillis() + "\n" +
                         "Failures: " + response.hasFailures() + "\n" +
                         "Failures Message: " + response.buildFailureMessage() + "\n" +
                         "Count: " + response.getItems().length);
