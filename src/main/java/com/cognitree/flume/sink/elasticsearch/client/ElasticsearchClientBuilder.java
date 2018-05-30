@@ -18,7 +18,7 @@ package com.cognitree.flume.sink.elasticsearch.client;
 import com.google.common.base.Throwables;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class ElasticsearchClientBuilder {
     private TimeValue transportPingTimeout;
     private TimeValue nodeSamplerInterval;
 
-    private List<InetSocketTransportAddress> transportAddresses;
+    private List<TransportAddress> transportAddresses;
 
     public ElasticsearchClientBuilder(String clusterName, String[] hostnames) {
         this.clusterName = clusterName;
@@ -93,7 +93,7 @@ public class ElasticsearchClientBuilder {
                         nodeSamplerInterval)
                 .build();
         client = new PreBuiltTransportClient(settings);
-        for (InetSocketTransportAddress inetSocketTransportAddress : transportAddresses) {
+        for (TransportAddress inetSocketTransportAddress : transportAddresses) {
             client.addTransportAddress(inetSocketTransportAddress);
         }
         return client;
@@ -101,15 +101,15 @@ public class ElasticsearchClientBuilder {
 
     private void setTransportAddresses(String[] transportAddresses) {
         try {
-            this.transportAddresses = new ArrayList<InetSocketTransportAddress>(transportAddresses.length);
+            this.transportAddresses = new ArrayList<TransportAddress>(transportAddresses.length);
             for (String transportAddress : transportAddresses) {
                 String hostName = transportAddress.split(":")[0];
                 Integer port = transportAddress.split(":").length > 1 ?
                         Integer.parseInt(transportAddress.split(":")[1]) : DEFAULT_ES_PORT;
-                this.transportAddresses.add(new InetSocketTransportAddress(InetAddress.getByName(hostName), port));
+                this.transportAddresses.add(new TransportAddress(InetAddress.getByName(hostName), port));
             }
         } catch (Exception e) {
-            logger.error("Error in creating the InetSocketTransportAddress for elastic search " + e.getMessage(), e);
+            logger.error("Error in creating the TransportAddress for elasticsearch " + e.getMessage(), e);
             Throwables.propagate(e);
         }
     }
