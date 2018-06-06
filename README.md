@@ -65,8 +65,7 @@ Example of agent named agent
   agent.sinks.es_sink.es.client.transport.ignore_cluster_name=false
   agent.sinks.es_sink.es.client.transport.ping_timeout=5s
   agent.sinks.es_sink.es.client.transport.nodes_sampler_interval=5s
-  agent.sinks.es_sink.es.client.hostName=localhost
-  agent.sinks.es_sink.es.client.port=9300
+  agent.sinks.es_sink.es.client.hosts=127.0.0.1:9300
   agent.sinks.es_sink.es.index.name=defaultindex
   agent.sinks.es_sink.es.index.type=defaulttype
   agent.sinks.es_sink.es.index.builder=com.cognitree.flume.sink.elasticsearch.HeaderBasedIndexBuilder
