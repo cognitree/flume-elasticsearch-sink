@@ -60,6 +60,8 @@ public class Constants {
     public static final String ES_TYPE = "es.type";
     public static final String DEFAULT_ES_TYPE = "default";
 
+    public static final String ES_ID = "es.id";
+
     public static final String ES_INDEX_BUILDER = "es.index.builder";
     public static final String DEFAULT_ES_INDEX_BUILDER = "com.cognitree.flume.sink.elasticsearch.StaticIndexBuilder";
 
@@ -70,7 +72,7 @@ public class Constants {
     public static final String ES_CLUSTER_NAME = "cluster.name";
     public static final String DEFAULT_ES_CLUSTER_NAME = "elasticsearch";
 
-    public static final String ES_HOSTS = "es.client.hosts";
+    public static final String ES_HOSTS = "hostNames";
 
     public static final Integer DEFAULT_ES_PORT = 9300;
 
