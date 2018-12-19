@@ -33,6 +33,10 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
 /**
@@ -45,17 +49,39 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearchSink.class);
 
+    private static final int TIMEOUT = 3000;
+
     private BulkProcessor bulkProcessor;
 
     private IndexBuilder indexBuilder;
 
     private Serializer serializer;
 
+    private TransportClient client;
+
+    private AtomicBoolean shouldBackOff = new AtomicBoolean(false);
+
+    public TransportClient getClient() {
+        return client;
+    }
+
+    public void setClient(TransportClient client) {
+        this.client = client;
+    }
+
+    public AtomicBoolean getshouldBackOff() {
+        return shouldBackOff;
+    }
+
+    public void setshouldBackOff(AtomicBoolean shouldBackOff) {
+        this.shouldBackOff = shouldBackOff;
+    }
+
     @Override
     public void configure(Context context) {
         String[] hosts = getHosts(context);
         if(ArrayUtils.isNotEmpty(hosts)) {
-            TransportClient client = new ElasticsearchClientBuilder(
+            client = new ElasticsearchClientBuilder(
                     context.getString(PREFIX + ES_CLUSTER_NAME, DEFAULT_ES_CLUSTER_NAME), hosts)
                     .setTransportSniff(context.getBoolean(
                             PREFIX + ES_TRANSPORT_SNIFF, false))
@@ -68,7 +94,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                     .build();
             buildIndexBuilder(context);
             buildSerializer(context);
-            bulkProcessor = new BulkProcessorBuilder().buildBulkProcessor(context, client);
+            bulkProcessor = new BulkProcessorBuilder().buildBulkProcessor(context, this);
         } else {
             logger.error("Could not create transport client, No host exist");
         }
@@ -76,6 +102,9 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
     @Override
     public Status process() throws EventDeliveryException {
+        if(shouldBackOff.get()){
+            return Status.BACKOFF;
+        }
         Channel channel = getChannel();
         Transaction txn = channel.getTransaction();
         txn.begin();
@@ -175,5 +204,25 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
             hosts = context.getString(ES_HOSTS).split(",");
         }
         return hosts;
+    }
+
+    public void checkElasticsearchConnection(){
+        shouldBackOff.set(true);
+        final Timer timer = new Timer();
+        final TimerTask task = new TimerTask() {
+            @Override
+            public void run()
+                if(checkConnection()) {
+                    shouldBackOff.set(false);
+                    timer.cancel();
+                    timer.purge();
+                }
+            }
+        };
+        timer.scheduleAtFixedRate(task, 0, TIMEOUT);
+    }
+
+    private boolean checkConnection(){
+        return !client.connectedNodes().isEmpty();
     }
 }

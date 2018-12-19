@@ -15,6 +15,7 @@
  */
 package com.cognitree.flume.sink.elasticsearch.client;
 
+import com.cognitree.flume.sink.elasticsearch.ElasticSearchSink;
 import com.cognitree.flume.sink.elasticsearch.Util;
 import org.apache.flume.Context;
 import org.elasticsearch.action.bulk.BackoffPolicy;
@@ -50,8 +51,10 @@ public class BulkProcessorBuilder {
 
     private Integer backoffPolicyRetries;
 
+    private ElasticSearchSink elasticSearchSink;
 
-    public BulkProcessor buildBulkProcessor(Context context, TransportClient client) {
+    public BulkProcessor buildBulkProcessor(Context context, ElasticSearchSink elasticSearchSink) {
+        this.elasticSearchSink = elasticSearchSink;
         bulkActions = context.getInteger(ES_BULK_ACTIONS,
                 DEFAULT_ES_BULK_ACTIONS);
         bulkProcessorName = context.getString(ES_BULK_PROCESSOR_NAME,
@@ -66,7 +69,7 @@ public class BulkProcessorBuilder {
                 DEFAULT_ES_BACKOFF_POLICY_START_DELAY);
         backoffPolicyRetries = context.getInteger(ES_BACKOFF_POLICY_RETRIES,
                 DEFAULT_ES_BACKOFF_POLICY_RETRIES);
-        return build(client);
+        return build(elasticSearchSink.getClient());
     }
 
     private BulkProcessor build(TransportClient client) {
@@ -110,10 +113,9 @@ public class BulkProcessorBuilder {
             public void afterBulk(long executionId,
                                   BulkRequest request,
                                   Throwable failure) {
-                logger.error("Bulk execution failed [" + executionId + "]" +
-                        failure.toString());
+                elasticSearchSink.checkElasticsearchConnection();
+                logger.error("Unable to send request to elasticsearch.", failure);
             }
         };
     }
-
 }
