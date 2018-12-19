@@ -33,6 +33,8 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
 /**
@@ -51,11 +53,23 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
     private Serializer serializer;
 
+    private static TransportClient client;
+
+    private static AtomicBoolean backOffPolicy=new AtomicBoolean(false);
+
+    public static void setBackOffPolicy(AtomicBoolean backOffPolicy) {
+        ElasticSearchSink.backOffPolicy = backOffPolicy;
+    }
+
+    public static boolean checkNodeConnection(){
+        return !client.connectedNodes().isEmpty();
+    }
+
     @Override
     public void configure(Context context) {
         String[] hosts = getHosts(context);
         if(ArrayUtils.isNotEmpty(hosts)) {
-            TransportClient client = new ElasticsearchClientBuilder(
+            client = new ElasticsearchClientBuilder(
                     context.getString(PREFIX + ES_CLUSTER_NAME, DEFAULT_ES_CLUSTER_NAME), hosts)
                     .setTransportSniff(context.getBoolean(
                             PREFIX + ES_TRANSPORT_SNIFF, false))
@@ -76,6 +90,10 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
     @Override
     public Status process() throws EventDeliveryException {
+        if(backOffPolicy.get()){
+            checkElasticsearchConnection();
+            return Status.BACKOFF;
+        }
         Channel channel = getChannel();
         Transaction txn = channel.getTransaction();
         txn.begin();
@@ -113,6 +131,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                 logger.error("exception in rollback.", ex);
             }
             logger.error("transaction rolled back.", tx);
+            backOffPolicy.set(true);
             return Status.BACKOFF;
         } finally {
             txn.close();
@@ -175,5 +194,11 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
             hosts = context.getString(ES_HOSTS).split(",");
         }
         return hosts;
+    }
+
+    private void checkElasticsearchConnection(){
+        if(!client.connectedNodes().isEmpty()){
+            backOffPolicy.set(false);
+        }
     }
 }

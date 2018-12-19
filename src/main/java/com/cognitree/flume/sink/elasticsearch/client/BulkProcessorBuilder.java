@@ -15,6 +15,7 @@
  */
 package com.cognitree.flume.sink.elasticsearch.client;
 
+import com.cognitree.flume.sink.elasticsearch.ElasticSearchSink;
 import com.cognitree.flume.sink.elasticsearch.Util;
 import org.apache.flume.Context;
 import org.elasticsearch.action.bulk.BackoffPolicy;
@@ -26,6 +27,8 @@ import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
@@ -112,8 +115,23 @@ public class BulkProcessorBuilder {
                                   Throwable failure) {
                 logger.error("Bulk execution failed [" + executionId + "]" +
                         failure.toString());
+                checkNodeConnectionTimer();
+                ElasticSearchSink.setBackOffPolicy(new AtomicBoolean(true));
+                throw new Error("Problem with elasticsearch.");
             }
         };
     }
 
+    private void checkNodeConnectionTimer(){
+        while(true) {
+            try {
+                wait(3000);
+                if (ElasticSearchSink.checkNodeConnection()) {
+                    ElasticSearchSink.setBackOffPolicy(new AtomicBoolean(false));
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
