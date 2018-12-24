@@ -113,7 +113,7 @@ public class BulkProcessorBuilder {
             public void afterBulk(long executionId,
                                   BulkRequest request,
                                   Throwable failure) {
-                elasticSearchSink.checkElasticsearchConnection();
+                elasticSearchSink.assertConnection();
                 logger.error("Unable to send request to elasticsearch.", failure);
             }
         };
