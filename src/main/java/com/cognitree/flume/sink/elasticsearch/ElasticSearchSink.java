@@ -211,7 +211,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
         final Timer timer = new Timer();
         final TimerTask task = new TimerTask() {
             @Override
-            public void run()
+            public void run() {
                 if(checkConnection()) {
                     shouldBackOff.set(false);
                     timer.cancel();
