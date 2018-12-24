@@ -40,7 +40,7 @@ public class SimpleSerializer implements Serializer {
         try {
             XContentParser parser = XContentFactory
                     .xContent(XContentType.JSON)
-                    .createParser(NamedXContentRegistry.EMPTY,DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
+                    .createParser(NamedXContentRegistry.EMPTY,
                             new String(event.getBody(), Charsets.UTF_8));
             builder = jsonBuilder().copyCurrentStructure(parser);
             parser.close();

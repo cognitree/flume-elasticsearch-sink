@@ -19,7 +19,6 @@ import com.google.gson.JsonParser;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.event.EventBuilder;
-import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +58,7 @@ public class TestCsvSerializer {
         XContentBuilder expected = generateContentBuilder();
         XContentBuilder actual = csvSerializer.serialize(event);
         JsonParser parser = new JsonParser();
-        assertEquals(parser.parse(Strings.toString(expected)), parser.parse(Strings.toString(actual)));
+        assertEquals(parser.parse(expected.string()), parser.parse(actual.string()));
     }
 
     private XContentBuilder generateContentBuilder() throws IOException {

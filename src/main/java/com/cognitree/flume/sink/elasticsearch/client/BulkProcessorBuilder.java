@@ -28,8 +28,6 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
 /**
@@ -53,8 +51,10 @@ public class BulkProcessorBuilder {
 
     private Integer backoffPolicyRetries;
 
+    private ElasticSearchSink elasticSearchSink;
 
-    public BulkProcessor buildBulkProcessor(Context context, TransportClient client) {
+    public BulkProcessor buildBulkProcessor(Context context, ElasticSearchSink elasticSearchSink) {
+        this.elasticSearchSink = elasticSearchSink;
         bulkActions = context.getInteger(ES_BULK_ACTIONS,
                 DEFAULT_ES_BULK_ACTIONS);
         bulkProcessorName = context.getString(ES_BULK_PROCESSOR_NAME,
@@ -69,7 +69,7 @@ public class BulkProcessorBuilder {
                 DEFAULT_ES_BACKOFF_POLICY_START_DELAY);
         backoffPolicyRetries = context.getInteger(ES_BACKOFF_POLICY_RETRIES,
                 DEFAULT_ES_BACKOFF_POLICY_RETRIES);
-        return build(client);
+        return build(elasticSearchSink.getClient());
     }
 
     private BulkProcessor build(TransportClient client) {
@@ -113,25 +113,9 @@ public class BulkProcessorBuilder {
             public void afterBulk(long executionId,
                                   BulkRequest request,
                                   Throwable failure) {
-                logger.error("Bulk execution failed [" + executionId + "]" +
-                        failure.toString());
-                checkNodeConnectionTimer();
-                ElasticSearchSink.setBackOffPolicy(new AtomicBoolean(true));
-                throw new Error("Problem with elasticsearch.");
+                elasticSearchSink.checkElasticsearchConnection();
+                logger.error("Unable to send request to elasticsearch.", failure);
             }
         };
-    }
-
-    private void checkNodeConnectionTimer(){
-        while(true) {
-            try {
-                wait(3000);
-                if (ElasticSearchSink.checkNodeConnection()) {
-                    ElasticSearchSink.setBackOffPolicy(new AtomicBoolean(false));
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
