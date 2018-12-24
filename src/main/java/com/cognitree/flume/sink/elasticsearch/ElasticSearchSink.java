@@ -49,7 +49,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearchSink.class);
 
-    private static final int TIMEOUT = 3000;
+    private static final int CHECK_CONNECTION_PERIOD = 3000;
 
     private BulkProcessor bulkProcessor;
 
@@ -65,17 +65,6 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
         return client;
     }
 
-    public void setClient(TransportClient client) {
-        this.client = client;
-    }
-
-    public AtomicBoolean getshouldBackOff() {
-        return shouldBackOff;
-    }
-
-    public void setshouldBackOff(AtomicBoolean shouldBackOff) {
-        this.shouldBackOff = shouldBackOff;
-    }
 
     @Override
     public void configure(Context context) {
@@ -206,7 +195,12 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
         return hosts;
     }
 
-    public void checkElasticsearchConnection(){
+    /**
+     * Checks for elasticsearch connection
+     * Sets shouldBackOff to true if bulkProcessor failed to deliver the request.
+     * Resets shouldBackOff to false once the connection to elasticsearch is established.
+     */
+    public void assertConnection(){
         shouldBackOff.set(true);
         final Timer timer = new Timer();
         final TimerTask task = new TimerTask() {
@@ -219,7 +213,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                 }
             }
         };
-        timer.scheduleAtFixedRate(task, 0, TIMEOUT);
+        timer.scheduleAtFixedRate(task, 0, CHECK_CONNECTION_PERIOD);
     }
 
     private boolean checkConnection(){
