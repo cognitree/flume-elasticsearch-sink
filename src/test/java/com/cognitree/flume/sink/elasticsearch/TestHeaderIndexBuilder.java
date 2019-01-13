@@ -41,7 +41,7 @@ public class TestHeaderIndexBuilder {
     private String id = "es-id";
 
     @Before
-    public void init() throws Exception {
+    public void init() {
         headerBasedIndexBuilder = new HeaderBasedIndexBuilder();
     }
 
@@ -51,7 +51,7 @@ public class TestHeaderIndexBuilder {
     @Test
     public void testHeaderIndex() {
         Event event = new SimpleEvent();
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put(INDEX, index);
         headers.put(TYPE, type);
         headers.put(ID, id);

@@ -1,0 +1,17 @@
+com/cognitree/flume/sink/elasticsearch/ElasticSearchSink.class
+com/cognitree/flume/sink/elasticsearch/SimpleSerializer.class
+com/cognitree/flume/sink/elasticsearch/Constants$ByteSizeEnum.class
+com/cognitree/flume/sink/elasticsearch/Util.class
+com/cognitree/flume/sink/elasticsearch/AvroSerializer.class
+com/cognitree/flume/sink/elasticsearch/IndexBuilder.class
+com/cognitree/flume/sink/elasticsearch/client/BulkProcessorBulider.class
+com/cognitree/flume/sink/elasticsearch/StaticIndexBuilder.class
+com/cognitree/flume/sink/elasticsearch/client/BulkProcessorBulider$1.class
+com/cognitree/flume/sink/elasticsearch/HeaderBasedIndexBuilder.class
+com/cognitree/flume/sink/elasticsearch/Constants.class
+com/cognitree/flume/sink/elasticsearch/CsvSerializer.class
+com/cognitree/flume/sink/elasticsearch/Constants$FieldTypeEnum.class
+com/cognitree/flume/sink/elasticsearch/Util$1.class
+com/cognitree/flume/sink/elasticsearch/client/ElasticSearchClientBuilder.class
+com/cognitree/flume/sink/elasticsearch/Serializer.class
+com/cognitree/flume/sink/elasticsearch/Constants$UnitEnum.class

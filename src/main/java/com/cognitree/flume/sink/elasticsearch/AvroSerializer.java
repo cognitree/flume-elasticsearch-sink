@@ -58,7 +58,9 @@ public class AvroSerializer implements Serializer {
                 logger.trace("Record in event " + data);
                 XContentParser parser = XContentFactory
                         .xContent(XContentType.JSON)
-                        .createParser(NamedXContentRegistry.EMPTY, data.toString());
+                        .createParser(NamedXContentRegistry.EMPTY,
+                                DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
+                                data.toString());
                 builder = jsonBuilder().copyCurrentStructure(parser);
                 parser.close();
             } else {
@@ -80,7 +82,7 @@ public class AvroSerializer implements Serializer {
         }
         try {
             Schema schema = new Schema.Parser().parse(new File(file));
-            datumReader = new GenericDatumReader<GenericRecord>(schema);
+            datumReader = new GenericDatumReader<>(schema);
         } catch (IOException e) {
             logger.error("Error in parsing schema file ", e.getMessage(), e);
             Throwables.propagate(e);

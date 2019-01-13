@@ -34,10 +34,6 @@ Required properties are in bold.
 | es.flush.interval.time                     | 10s            | Flush a batch as a bulk request every mentioned seconds irrespective of the number of requests|
 | es.backoff.policy.time.interval            | 50M            | Backoff policy time interval, wait initially for the 50 miliseconds                           |
 | es.backoff.policy.retries                  | 8              | Number of backoff policy retries                                                              |
-| es.client.transport.sniff                  | false          | Enable or disable the sniff feature of the elastic search                                     |
-| es.client.transport.ignore_cluster_name    | false          | Ignore cluster name validation of connected nodes                                             |
-| es.client.transport.ping_timeout           | 5s             | The time to wait for a ping response from a node                                              |
-| es.client.transport.nodes_sampler_interval | 5s             | How often to sample / ping the nodes listed and connected                                     |
 | es.index                                   | default        | Index name to be used to store the documents                                                  |
 | es.type                                    | default        | Type to be used to store the documents                                                        |
 | es.index.builder                           |com.cognitree.<br>flume.sink.<br>elasticsearch.<br>StaticIndexBuilder          | Implementation of com.cognitree.flume.sink.elasticsearch.IndexBuilder interface |
@@ -61,13 +57,9 @@ Example of agent named agent
   agent.sinks.es_sink.es.backoff.policy.time.interval=50M
   agent.sinks.es_sink.es.backoff.policy.retries=8
   agent.sinks.es_sink.es.cluster.name=es-cluster
-  agent.sinks.es_sink.es.client.transport.sniff=false
-  agent.sinks.es_sink.es.client.transport.ignore_cluster_name=false
-  agent.sinks.es_sink.es.client.transport.ping_timeout=5s
-  agent.sinks.es_sink.es.client.transport.nodes_sampler_interval=5s
   agent.sinks.es_sink.es.client.hosts=127.0.0.1:9300
-  agent.sinks.es_sink.es.index.name=defaultindex
-  agent.sinks.es_sink.es.index.type=defaulttype
+  agent.sinks.es_sink.es.index=defaultindex
+  agent.sinks.es_sink.es.type=defaulttype
   agent.sinks.es_sink.es.index.builder=com.cognitree.flume.sink.elasticsearch.HeaderBasedIndexBuilder
   agent.sinks.es_sink.es.serializer=com.cognitree.flume.sink.elasticsearch.SimpleSerializer
   agent.sinks.es_sink.es.serializer.csv.fields=id:int,name:string,isemployee:boolean,leaves:float

@@ -1,26 +1,10 @@
-/*
- * Copyright 2017 Cognitree Technologies
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
 package com.cognitree.flume.sink.elasticsearch;
 
-import com.cognitree.flume.sink.elasticsearch.client.BulkProcessorBuilder;
-import com.cognitree.flume.sink.elasticsearch.client.ElasticsearchClientBuilder;
+import com.cognitree.flume.sink.elasticsearch.client.BulkProcessorBulider;
+import com.cognitree.flume.sink.elasticsearch.client.ElasticSearchClientBuilder;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import io.netty.util.internal.StringUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.flume.*;
@@ -28,7 +12,7 @@ import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,28 +38,21 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
     @Override
     public void configure(Context context) {
         String[] hosts = getHosts(context);
-        if(ArrayUtils.isNotEmpty(hosts)) {
-            TransportClient client = new ElasticsearchClientBuilder(
+        if (ArrayUtils.isNotEmpty(hosts)) {
+            RestHighLevelClient client;
+            client = new ElasticSearchClientBuilder(
                     context.getString(PREFIX + ES_CLUSTER_NAME, DEFAULT_ES_CLUSTER_NAME), hosts)
-                    .setTransportSniff(context.getBoolean(
-                            PREFIX + ES_TRANSPORT_SNIFF, false))
-                    .setIgnoreClusterName(context.getBoolean(
-                            PREFIX + ES_IGNORE_CLUSTER_NAME, false))
-                    .setTransportPingTimeout(Util.getTimeValue(context.getString(
-                            PREFIX + ES_TRANSPORT_PING_TIMEOUT), DEFAULT_ES_TIME))
-                    .setNodeSamplerInterval(Util.getTimeValue(context.getString(
-                            PREFIX + ES_TRANSPORT_NODE_SAMPLER_INTERVAL), DEFAULT_ES_TIME))
                     .build();
             buildIndexBuilder(context);
             buildSerializer(context);
-            bulkProcessor = new BulkProcessorBuilder().buildBulkProcessor(context, client);
+            bulkProcessor = new BulkProcessorBulider().buildBulkProcessor(context, client);
         } else {
-            logger.error("Could not create transport client, No host exist");
+            logger.error("Could not create Rest client, No host exist");
         }
     }
 
     @Override
-    public Status process() throws EventDeliveryException {
+    public Sink.Status process() {
         Channel channel = getChannel();
         Transaction txn = channel.getTransaction();
         txn.begin();
@@ -89,8 +66,8 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                     String type = indexBuilder.getType(event);
                     String id = indexBuilder.getId(event);
                     XContentBuilder xContentBuilder = serializer.serialize(event);
-                    if(xContentBuilder != null) {
-                        if (!StringUtil.isNullOrEmpty(id)) {
+                    if (xContentBuilder != null) {
+                        if (!(StringUtils.isNotBlank(id) && StringUtils.isNotEmpty(id))) {
                             bulkProcessor.add(new IndexRequest(index, type, id)
                                     .source(xContentBuilder));
                         } else {
@@ -105,7 +82,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                 logger.debug("sink event [{}] successfully.", body);
             }
             txn.commit();
-            return Status.READY;
+            return Sink.Status.READY;
         } catch (Throwable tx) {
             try {
                 txn.rollback();
@@ -113,7 +90,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                 logger.error("exception in rollback.", ex);
             }
             logger.error("transaction rolled back.", tx);
-            return Status.BACKOFF;
+            return Sink.Status.BACKOFF;
         } finally {
             txn.close();
         }
@@ -149,7 +126,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
             serializerClass = context.getString(ES_SERIALIZER);
         }
         this.serializer = instantiateClass(serializerClass);
-        if(this.serializer != null) {
+        if (this.serializer != null) {
             this.serializer.configure(context);
         }
     }
