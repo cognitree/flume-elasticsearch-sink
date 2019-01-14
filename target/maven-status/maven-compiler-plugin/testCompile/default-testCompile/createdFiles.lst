@@ -1,3 +1,0 @@
-com/cognitree/flume/sink/elasticsearch/TestAvroSerializer.class
-com/cognitree/flume/sink/elasticsearch/TestCsvSerializer.class
-com/cognitree/flume/sink/elasticsearch/TestHeaderIndexBuilder.class

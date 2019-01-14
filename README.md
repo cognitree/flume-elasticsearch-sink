@@ -59,7 +59,6 @@ Example of agent named agent
   agent.sinks.es_sink.es.cluster.name=es-cluster
   agent.sinks.es_sink.es.client.hosts=127.0.0.1:9300
   agent.sinks.es_sink.es.index=defaultindex
-  agent.sinks.es_sink.es.type=defaulttype
   agent.sinks.es_sink.es.index.builder=com.cognitree.flume.sink.elasticsearch.HeaderBasedIndexBuilder
   agent.sinks.es_sink.es.serializer=com.cognitree.flume.sink.elasticsearch.SimpleSerializer
   agent.sinks.es_sink.es.serializer.csv.fields=id:int,name:string,isemployee:boolean,leaves:float

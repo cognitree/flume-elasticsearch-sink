@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.cognitree.flume.sink.elasticsearch.TestCsvSerializer
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.639 sec - in com.cognitree.flume.sink.elasticsearch.TestCsvSerializer
