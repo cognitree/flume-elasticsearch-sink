@@ -40,7 +40,6 @@ public class HeaderBasedSerializer implements Serializer {
                     Util.addField(xContentBuilder, name, headers.get(name), types.get(i));
                 }
 
-                xContentBuilder.field(bodyFieldName, body);
                 Util.addField(xContentBuilder, bodyFieldName, body, DEFAULT_ES_HEADERBASED_BODY_FIELD_TYPE);
 
                 xContentBuilder.endObject();
