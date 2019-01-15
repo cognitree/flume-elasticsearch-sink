@@ -34,13 +34,13 @@ public class TestHeaderBasedSerializer {
     public void testSerializer() throws IOException {
         Context context = new Context();
         context.put(ES_HEADERBASED_BODY_FIELD_NAME, "message");
-        context.put(ES_HEADERBASED_FIELDS, "id:int,name:string,datetime:string,@timestamp:int");
+        context.put(ES_HEADERBASED_FIELDS, "id:int,name:string,datetime:string,@timestamp:long");
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("id", "1");
         headers.put("name", "test");
         headers.put("datetime", "2018-12-12 12:42:42.424");
-        headers.put("@timestamp", "1544607762");
+        headers.put("@timestamp", "1544607762424");
 
         Event event = EventBuilder.withBody(message, charset, headers);
 
@@ -58,7 +58,7 @@ public class TestHeaderBasedSerializer {
         expected.field("id", 1);
         expected.field("name", "test");
         expected.field("datetime", "2018-12-12 12:42:42.424");
-        expected.field("@timestamp", 1544607762);
+        expected.field("@timestamp", 1544607762424L);
         expected.field("message", message);
         expected.endObject();
         return expected;

@@ -151,6 +151,7 @@ public class Constants {
     public enum FieldTypeEnum {
         STRING("string"),
         INT("int"),
+        LONG("long"),
         FLOAT("float"),
         BOOLEAN("boolean");
 
