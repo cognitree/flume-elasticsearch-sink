@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static com.cognitree.flume.sink.elasticsearch.Constants.ES_HEADERBASED_FIELDS;
+import static com.cognitree.flume.sink.elasticsearch.Constants.ES_HEADERBASED_BODY_FIELD_NAME;
 import static org.junit.Assert.*;
 
 public class TestHeaderBasedSerializer {
@@ -31,11 +33,14 @@ public class TestHeaderBasedSerializer {
     @Test
     public void testSerializer() throws IOException {
         Context context = new Context();
-        context.put("es.serializer.json.bodyFieldName", "message");
+        context.put(ES_HEADERBASED_BODY_FIELD_NAME, "message");
+        context.put(ES_HEADERBASED_FIELDS, "id:int,name:string,datetime:string,@timestamp:int");
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("id", "1");
         headers.put("name", "test");
+        headers.put("datetime", "2018-12-12 12:42:42.424");
+        headers.put("@timestamp", "1544607762");
 
         Event event = EventBuilder.withBody(message, charset, headers);
 
@@ -50,8 +55,10 @@ public class TestHeaderBasedSerializer {
 
     private XContentBuilder generateContentBuilder() throws IOException {
         XContentBuilder expected = jsonBuilder().startObject();
-        expected.field("id", "1");
+        expected.field("id", 1);
         expected.field("name", "test");
+        expected.field("datetime", "2018-12-12 12:42:42.424");
+        expected.field("@timestamp", 1544607762);
         expected.field("message", message);
         expected.endObject();
         return expected;
