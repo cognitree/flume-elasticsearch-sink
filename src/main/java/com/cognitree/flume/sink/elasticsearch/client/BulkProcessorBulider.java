@@ -35,7 +35,7 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
 /**
  * This class creates  an instance of the {@link BulkProcessor}
- * Sets the configuration for teh BulkProcessor through {@link Context} object
+ * Set the configuration for the BulkProcessor through {@link Context} object
  */
 public class BulkProcessorBulider {
 

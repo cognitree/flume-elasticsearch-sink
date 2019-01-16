@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
 /**
- * Implementation of {@link IndexBuilder}
+ * This class creates the index type and Id based on static fields
  */
 public class StaticIndexBuilder implements IndexBuilder {
 

@@ -22,7 +22,10 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.flume.*;
+import org.apache.flume.Channel;
+import org.apache.flume.Context;
+import org.apache.flume.Event;
+import org.apache.flume.Transaction;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
 import org.elasticsearch.action.bulk.BulkProcessor;
@@ -37,7 +40,7 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 /**
  * This sink will read the events from a channel and add them to the bulk processor.
  * <p>
- * This sink must be configured with with mandatory parameters detailed in
+ * This sink must be configured with mandatory parameters detailed in
  * {@link Constants}
  */
 public class ElasticSearchSink extends AbstractSink implements Configurable {
@@ -67,7 +70,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
     }
 
     @Override
-    public Sink.Status process() {
+    public Status process() {
         Channel channel = getChannel();
         Transaction txn = channel.getTransaction();
         txn.begin();
@@ -97,7 +100,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                 logger.debug("sink event [{}] successfully.", body);
             }
             txn.commit();
-            return Sink.Status.READY;
+            return Status.READY;
         } catch (Throwable tx) {
             try {
                 txn.rollback();
@@ -105,7 +108,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                 logger.error("exception in rollback.", ex);
             }
             logger.error("transaction rolled back.", tx);
-            return Sink.Status.BACKOFF;
+            return Status.BACKOFF;
         } finally {
             txn.close();
         }

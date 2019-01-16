@@ -23,6 +23,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,8 +64,8 @@ public class CsvSerializer implements Serializer {
                 logger.error("Fields for csv files are not configured, " +
                         "please configured the property " + ES_CSV_FIELDS);
             }
-        } catch (Exception e) {
-            logger.error("Error in converting the body to the json format " + e.getMessage(), e);
+        } catch (IOException io) {
+            logger.error("Error in converting the body to the json format " + io.getMessage(), io);
         }
         return xContentBuilder;
     }

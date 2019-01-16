@@ -44,9 +44,6 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.ES_AVRO_SCHEMA_FI
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
 
-/**
- * test class for {@link AvroSerializer}
- */
 @RunWith(Parameterized.class)
 public class TestAvroSerializer {
 

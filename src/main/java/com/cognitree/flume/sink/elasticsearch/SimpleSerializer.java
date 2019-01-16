@@ -22,6 +22,8 @@ import org.elasticsearch.common.xcontent.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
@@ -43,8 +45,8 @@ public class SimpleSerializer implements Serializer {
                             new String(event.getBody(), Charsets.UTF_8));
             builder = jsonBuilder().copyCurrentStructure(parser);
             parser.close();
-        } catch (Exception e) {
-            logger.error("Error in Converting the body to json field " + e.getMessage(), e);
+        } catch (IOException io) {
+            logger.error("Error in Converting the body to json field " + io.getMessage(), io);
         }
         return builder;
     }

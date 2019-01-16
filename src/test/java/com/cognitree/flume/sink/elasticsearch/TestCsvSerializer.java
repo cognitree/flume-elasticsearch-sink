@@ -31,9 +31,6 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.ES_CSV_FIELDS;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
 
-/**
- * test class for {@link CsvSerializer}
- */
 public class TestCsvSerializer {
 
     private CsvSerializer csvSerializer;

@@ -31,7 +31,7 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.DEFAULT_ES_PORT;
 
 /**
  * This class creates  an instance of the {@link RestHighLevelClient}
- * Sets the number of hosts for the client
+ * Set the hosts for the client
  */
 public class ElasticsearchClientBuilder {
 
@@ -64,10 +64,10 @@ public class ElasticsearchClientBuilder {
         try {
             this.transportAddresses = new ArrayList<>(transportAddresses.length);
             for (String transportAddress : transportAddresses) {
-                String[] details = transportAddress.split(":");
-                String hostName = details[0];
-                Integer port = details.length > 1 ?
-                        Integer.parseInt(details[1]) : DEFAULT_ES_PORT;
+                String[] hostDetails = transportAddress.split(":");
+                String hostName = hostDetails[0];
+                Integer port = hostDetails.length > 1 ?
+                        Integer.parseInt(hostDetails[1]) : DEFAULT_ES_PORT;
                 this.transportAddresses.add(new TransportAddress(InetAddress.getByName(hostName), port));
             }
         } catch (UnknownHostException uhe) {
