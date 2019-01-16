@@ -16,7 +16,7 @@
 package com.cognitree.flume.sink.elasticsearch;
 
 import com.cognitree.flume.sink.elasticsearch.client.BulkProcessorBulider;
-import com.cognitree.flume.sink.elasticsearch.client.ElasticSearchClientBuilder;
+import com.cognitree.flume.sink.elasticsearch.client.ElasticsearchClientBuilder;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -55,7 +55,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
         String[] hosts = getHosts(context);
         if (ArrayUtils.isNotEmpty(hosts)) {
             RestHighLevelClient client;
-            client = new ElasticSearchClientBuilder(
+            client = new ElasticsearchClientBuilder(
                     context.getString(PREFIX + ES_CLUSTER_NAME, DEFAULT_ES_CLUSTER_NAME), hosts)
                     .build();
             buildIndexBuilder(context);
@@ -82,7 +82,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                     String id = indexBuilder.getId(event);
                     XContentBuilder xContentBuilder = serializer.serialize(event);
                     if (xContentBuilder != null) {
-                        if (!(StringUtils.isNotBlank(id) && StringUtils.isNotEmpty(id))) {
+                        if (!(Strings.isNullOrEmpty(id))) {
                             bulkProcessor.add(new IndexRequest(index, type, id)
                                     .source(xContentBuilder));
                         } else {

@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
- * Created by prashant
- * <p>
  * This Serializer assumes the event body to be in JSON format
  * Validate the json and copy the same structure in the parser
  * returns XContentBuilder

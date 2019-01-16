@@ -35,8 +35,6 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.ES_AVRO_SCHEMA_FI
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
- * Created by prashant
- * <p>
  * This Serializer assumes the event body to be in avro binary format
  */
 public class AvroSerializer implements Serializer {

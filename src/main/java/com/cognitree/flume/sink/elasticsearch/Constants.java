@@ -16,7 +16,7 @@
 package com.cognitree.flume.sink.elasticsearch;
 
 /**
- * Created by prashant
+ * Class to configure properties and defaults
  */
 public class Constants {
 
@@ -80,7 +80,7 @@ public class Constants {
 
     /**
      * This enum is used for the time unit
-     *
+     * <p>
      * Time unit can be in Second, Minute or Mili second
      */
     public enum UnitEnum {
@@ -111,9 +111,8 @@ public class Constants {
     }
 
     /**
-     *
      * This enum is used for unit of size of data
-     *
+     * <p>
      * Unit can be in Mega byte or kilo byte
      */
     public enum ByteSizeEnum {
@@ -133,8 +132,7 @@ public class Constants {
     }
 
     /**
-     *  Enum for field type
-     *
+     * Enum for field type
      */
     public enum FieldTypeEnum {
         STRING("string"),

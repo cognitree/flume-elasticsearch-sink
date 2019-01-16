@@ -28,7 +28,7 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by prashant
+ * test class for {@link HeaderBasedIndexBuilder}
  */
 public class TestHeaderIndexBuilder {
 

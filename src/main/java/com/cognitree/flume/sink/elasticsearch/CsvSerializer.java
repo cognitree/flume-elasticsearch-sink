@@ -31,8 +31,6 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
- * Created by prashant
- *
  * This Serializer assumes the event body to be in CSV format
  * with custom delimiter specified.
  */
@@ -47,7 +45,6 @@ public class CsvSerializer implements Serializer {
     private String delimiter;
 
     /**
-     *
      * Converts the csv data to the json format
      */
     @Override
@@ -73,9 +70,7 @@ public class CsvSerializer implements Serializer {
     }
 
     /**
-     *
      * Returns name and value based on the index
-     *
      */
     private String getValue(String fieldType, Integer index) {
         String value = "";
@@ -86,13 +81,12 @@ public class CsvSerializer implements Serializer {
     }
 
     /**
-     *
      * Configure the field and its type with the custom delimiter
      */
     @Override
     public void configure(Context context) {
         String fields = context.getString(ES_CSV_FIELDS);
-        if(fields == null) {
+        if (fields == null) {
             Throwables.propagate(new Exception("Fields for csv files are not configured," +
                     " please configured the property " + ES_CSV_FIELDS));
         }
@@ -103,7 +97,7 @@ public class CsvSerializer implements Serializer {
                 names.add(getValue(fieldType, 0));
                 types.add(getValue(fieldType, 1));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             Throwables.propagate(e);
         }
     }

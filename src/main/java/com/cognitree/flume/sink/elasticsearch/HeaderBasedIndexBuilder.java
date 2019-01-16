@@ -23,8 +23,6 @@ import java.util.Map;
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
 /**
- * Created by prashant
- * <p>
  * This class create the index type and Id based on header
  */
 public class HeaderBasedIndexBuilder extends StaticIndexBuilder {

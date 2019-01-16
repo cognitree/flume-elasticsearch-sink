@@ -45,7 +45,7 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by prashant
+ * test class for {@link AvroSerializer}
  */
 @RunWith(Parameterized.class)
 public class TestAvroSerializer {
@@ -64,12 +64,13 @@ public class TestAvroSerializer {
 
     @Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                { 1,"user1", "Male" },
-                { 2, "user2", "Female" },
-                { 3, "user3", "Male" }
+        return Arrays.asList(new Object[][]{
+                {1, "user1", "Male"},
+                {2, "user2", "Female"},
+                {3, "user3", "Male"}
         });
     }
+
     public TestAvroSerializer(Integer id, String name, String gender) {
         this.id = id;
         this.name = name;

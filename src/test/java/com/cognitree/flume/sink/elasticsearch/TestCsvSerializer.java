@@ -32,7 +32,7 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by prashant
+ * test class for {@link CsvSerializer}
  */
 public class TestCsvSerializer {
 

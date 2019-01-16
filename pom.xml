@@ -30,7 +30,6 @@
         <log4j-version>2.11.0</log4j-version>
         <junit-version>4.10</junit-version>
         <avro-version>1.8.2</avro-version>
-        <commons-version>2.6</commons-version>
     </properties>
 
     <build>
@@ -72,11 +71,6 @@
             <artifactId>flume-ng-core</artifactId>
             <version>${flume-version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
