@@ -22,11 +22,11 @@ import org.elasticsearch.common.xcontent.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
- * Created by prashant
- * <p>
  * This Serializer assumes the event body to be in JSON format
  * Validate the json and copy the same structure in the parser
  * returns XContentBuilder
@@ -41,10 +41,11 @@ public class SimpleSerializer implements Serializer {
             XContentParser parser = XContentFactory
                     .xContent(XContentType.JSON)
                     .createParser(NamedXContentRegistry.EMPTY,
+                            DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
                             new String(event.getBody(), Charsets.UTF_8));
             builder = jsonBuilder().copyCurrentStructure(parser);
             parser.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Error in Converting the body to json field " + e.getMessage(), e);
         }
         return builder;

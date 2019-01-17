@@ -15,20 +15,22 @@
  */
 package com.cognitree.flume.sink.elasticsearch;
 
-import com.cognitree.flume.sink.elasticsearch.client.BulkProcessorBuilder;
+import com.cognitree.flume.sink.elasticsearch.client.BulkProcessorBulider;
 import com.cognitree.flume.sink.elasticsearch.client.ElasticsearchClientBuilder;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import io.netty.util.internal.StringUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.flume.*;
+import org.apache.flume.Channel;
+import org.apache.flume.Context;
+import org.apache.flume.Event;
+import org.apache.flume.Transaction;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,7 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 /**
  * This sink will read the events from a channel and add them to the bulk processor.
  * <p>
- * This sink must be configured with with mandatory parameters detailed in
+ * This sink must be configured with mandatory parameters detailed in
  * {@link Constants}
  */
 public class ElasticSearchSink extends AbstractSink implements Configurable {
@@ -54,28 +56,21 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
     @Override
     public void configure(Context context) {
         String[] hosts = getHosts(context);
-        if(ArrayUtils.isNotEmpty(hosts)) {
-            TransportClient client = new ElasticsearchClientBuilder(
+        if (ArrayUtils.isNotEmpty(hosts)) {
+            RestHighLevelClient client;
+            client = new ElasticsearchClientBuilder(
                     context.getString(PREFIX + ES_CLUSTER_NAME, DEFAULT_ES_CLUSTER_NAME), hosts)
-                    .setTransportSniff(context.getBoolean(
-                            PREFIX + ES_TRANSPORT_SNIFF, false))
-                    .setIgnoreClusterName(context.getBoolean(
-                            PREFIX + ES_IGNORE_CLUSTER_NAME, false))
-                    .setTransportPingTimeout(Util.getTimeValue(context.getString(
-                            PREFIX + ES_TRANSPORT_PING_TIMEOUT), DEFAULT_ES_TIME))
-                    .setNodeSamplerInterval(Util.getTimeValue(context.getString(
-                            PREFIX + ES_TRANSPORT_NODE_SAMPLER_INTERVAL), DEFAULT_ES_TIME))
                     .build();
             buildIndexBuilder(context);
             buildSerializer(context);
-            bulkProcessor = new BulkProcessorBuilder().buildBulkProcessor(context, client);
+            bulkProcessor = new BulkProcessorBulider().buildBulkProcessor(context, client);
         } else {
-            logger.error("Could not create transport client, No host exist");
+            logger.error("Could not create Rest client, No host exist");
         }
     }
 
     @Override
-    public Status process() throws EventDeliveryException {
+    public Status process() {
         Channel channel = getChannel();
         Transaction txn = channel.getTransaction();
         txn.begin();
@@ -89,8 +84,8 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                     String type = indexBuilder.getType(event);
                     String id = indexBuilder.getId(event);
                     XContentBuilder xContentBuilder = serializer.serialize(event);
-                    if(xContentBuilder != null) {
-                        if (!StringUtil.isNullOrEmpty(id)) {
+                    if (xContentBuilder != null) {
+                        if (!(Strings.isNullOrEmpty(id))) {
                             bulkProcessor.add(new IndexRequest(index, type, id)
                                     .source(xContentBuilder));
                         } else {
@@ -149,7 +144,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
             serializerClass = context.getString(ES_SERIALIZER);
         }
         this.serializer = instantiateClass(serializerClass);
-        if(this.serializer != null) {
+        if (this.serializer != null) {
             this.serializer.configure(context);
         }
     }

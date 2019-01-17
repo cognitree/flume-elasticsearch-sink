@@ -19,6 +19,7 @@ import com.google.gson.JsonParser;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.event.EventBuilder;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,9 +31,6 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.ES_CSV_FIELDS;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by prashant
- */
 public class TestCsvSerializer {
 
     private CsvSerializer csvSerializer;
@@ -40,7 +38,7 @@ public class TestCsvSerializer {
     private static final Charset charset = Charset.defaultCharset();
 
     @Before
-    public void init() throws Exception {
+    public void init() {
         csvSerializer = new CsvSerializer();
     }
 
@@ -58,7 +56,7 @@ public class TestCsvSerializer {
         XContentBuilder expected = generateContentBuilder();
         XContentBuilder actual = csvSerializer.serialize(event);
         JsonParser parser = new JsonParser();
-        assertEquals(parser.parse(expected.string()), parser.parse(actual.string()));
+        assertEquals(parser.parse(Strings.toString(expected)), parser.parse(Strings.toString(actual)));
     }
 
     private XContentBuilder generateContentBuilder() throws IOException {

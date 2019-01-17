@@ -26,6 +26,7 @@ import org.apache.avro.io.EncoderFactory;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.event.EventBuilder;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,9 +44,6 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.ES_AVRO_SCHEMA_FI
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by prashant
- */
 @RunWith(Parameterized.class)
 public class TestAvroSerializer {
 
@@ -63,12 +61,13 @@ public class TestAvroSerializer {
 
     @Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                { 1,"user1", "Male" },
-                { 2, "user2", "Female" },
-                { 3, "user3", "Male" }
+        return Arrays.asList(new Object[][]{
+                {1, "user1", "Male"},
+                {2, "user2", "Female"},
+                {3, "user3", "Male"}
         });
     }
+
     public TestAvroSerializer(Integer id, String name, String gender) {
         this.id = id;
         this.name = name;
@@ -76,7 +75,7 @@ public class TestAvroSerializer {
     }
 
     @Before
-    public void init() throws Exception {
+    public void init() {
         avroSerializer = new AvroSerializer();
     }
 
@@ -91,7 +90,7 @@ public class TestAvroSerializer {
         avroSerializer.configure(context);
         Schema schema = new Schema.Parser().parse(new File(schemaFile));
         GenericRecord user = generateGenericRecord(schema);
-        DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<GenericRecord>(schema);
+        DatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<>(schema);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Encoder encoder = new EncoderFactory().binaryEncoder(outputStream, null);
         datumWriter.write(user, encoder);
@@ -100,7 +99,7 @@ public class TestAvroSerializer {
         XContentBuilder expected = generateContentBuilder();
         XContentBuilder actual = avroSerializer.serialize(event);
         JsonParser parser = new JsonParser();
-        assertEquals(parser.parse(expected.string()), parser.parse(actual.string()));
+        assertEquals(parser.parse(Strings.toString(expected)), parser.parse(Strings.toString(actual)));
     }
 
     private GenericRecord generateGenericRecord(Schema schema) {

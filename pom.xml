@@ -25,7 +25,7 @@
     <version>2.0.0</version>
 
     <properties>
-        <elasticsearch-verison>6.2.4</elasticsearch-verison>
+        <elasticsearch-verison>6.5.4</elasticsearch-verison>
         <flume-version>1.8.0</flume-version>
         <log4j-version>2.11.0</log4j-version>
         <junit-version>4.10</junit-version>
@@ -43,12 +43,21 @@
                     </descriptors>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
             <version>${elasticsearch-verison}</version>
         </dependency>
         <dependency>
@@ -57,7 +66,6 @@
             <version>${flume-version}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.flume</groupId>
             <artifactId>flume-ng-core</artifactId>

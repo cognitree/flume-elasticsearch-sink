@@ -22,7 +22,6 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 /**
  * A serializer to convert the given Flume Event into a json document that will be indexed into Elasticsearch.
  * A single instance of the class is created when the Sink initializes and is destroyed when the Sink is stopped.
- *
  */
 public interface Serializer extends Configurable {
 
