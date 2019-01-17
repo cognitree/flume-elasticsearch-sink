@@ -45,8 +45,8 @@ public class SimpleSerializer implements Serializer {
                             new String(event.getBody(), Charsets.UTF_8));
             builder = jsonBuilder().copyCurrentStructure(parser);
             parser.close();
-        } catch (IOException io) {
-            logger.error("Error in Converting the body to json field " + io.getMessage(), io);
+        } catch (IOException e) {
+            logger.error("Error in Converting the body to json field " + e.getMessage(), e);
         }
         return builder;
     }

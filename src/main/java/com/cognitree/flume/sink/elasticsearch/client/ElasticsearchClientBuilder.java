@@ -70,8 +70,8 @@ public class ElasticsearchClientBuilder {
                         Integer.parseInt(hostDetails[1]) : DEFAULT_ES_PORT;
                 this.transportAddresses.add(new TransportAddress(InetAddress.getByName(hostName), port));
             }
-        } catch (UnknownHostException uhe) {
-            logger.error("Error in creating the TransportAddress for elasticsearch " + uhe.getMessage(), uhe);
+        } catch (UnknownHostException e) {
+            logger.error("Error in creating the TransportAddress for elasticsearch " + e.getMessage(), e);
         }
     }
 }

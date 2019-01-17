@@ -64,8 +64,8 @@ public class CsvSerializer implements Serializer {
                 logger.error("Fields for csv files are not configured, " +
                         "please configured the property " + ES_CSV_FIELDS);
             }
-        } catch (IOException io) {
-            logger.error("Error in converting the body to the json format " + io.getMessage(), io);
+        } catch (IOException e) {
+            logger.error("Error in converting the body to the json format " + e.getMessage(), e);
         }
         return xContentBuilder;
     }
