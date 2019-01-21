@@ -25,14 +25,14 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
         <dependencySet>
-            <outputDirectory>elasticsearch-5.4/lib</outputDirectory>
+            <outputDirectory>elasticsearch-6.2/lib</outputDirectory>
             <unpack>false</unpack>
             <includes>
                 <include>${artifact}</include>
             </includes>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>elasticsearch-5.4/libext</outputDirectory>
+            <outputDirectory>elasticsearch-6.2/libext</outputDirectory>
             <unpack>false</unpack>
         </dependencySet>
     </dependencySets>
