@@ -28,6 +28,7 @@ import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
@@ -92,7 +93,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
     @Override
     public Status process() throws EventDeliveryException {
         if(shouldBackOff.get()){
-            return Status.BACKOFF;
+            throw new NoNodeAvailableException("Check whether Elasticsearch is down or not.");
         }
         Channel channel = getChannel();
         Transaction txn = channel.getTransaction();
