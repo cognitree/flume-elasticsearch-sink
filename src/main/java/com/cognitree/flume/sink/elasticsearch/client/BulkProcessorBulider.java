@@ -18,30 +18,35 @@ package com.cognitree.flume.sink.elasticsearch.client;
 import com.cognitree.flume.sink.elasticsearch.ElasticSearchSink;
 import com.cognitree.flume.sink.elasticsearch.Util;
 import org.apache.flume.Context;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.BiConsumer;
+
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
 /**
- * Created by prashant
+ * This class creates  an instance of the {@link BulkProcessor}
+ * Set the configuration for the BulkProcessor through {@link Context} object
  */
-public class BulkProcessorBuilder {
+public class BulkProcessorBulider {
 
-    private static final Logger logger = LoggerFactory.getLogger(BulkProcessorBuilder.class);
-
-    private Integer bulkActions;
+    private static final Logger logger = LoggerFactory.getLogger(BulkProcessorBulider.class);
 
     private String bulkProcessorName;
 
     private ByteSizeValue bulkSize;
+
+    private Integer bulkActions;
 
     private Integer concurrentRequest;
 
@@ -72,12 +77,15 @@ public class BulkProcessorBuilder {
         return build(elasticSearchSink.getClient());
     }
 
-    private BulkProcessor build(TransportClient client) {
+    private BulkProcessor build(final RestHighLevelClient client) {
         logger.trace("Bulk processor name: [{}]  bulkActions: [{}], bulkSize: [{}], flush interval time: [{}]," +
                         " concurrent Request: [{}], backoffPolicyTimeInterval: [{}], backoffPolicyRetries: [{}] ",
                 new Object[]{bulkProcessorName, bulkActions, bulkSize, flushIntervalTime,
                         concurrentRequest, backoffPolicyTimeInterval, backoffPolicyRetries});
-        return BulkProcessor.builder(client, getListener())
+        BiConsumer<BulkRequest, ActionListener<BulkResponse>> bulkConsumer =
+                (request, bulkListener) -> client
+                        .bulkAsync(request, RequestOptions.DEFAULT, bulkListener);
+        return BulkProcessor.builder(bulkConsumer, getListener())
                 .setBulkActions(bulkActions)
                 .setBulkSize(bulkSize)
                 .setFlushInterval(flushIntervalTime)
@@ -118,4 +126,5 @@ public class BulkProcessorBuilder {
             }
         };
     }
+
 }

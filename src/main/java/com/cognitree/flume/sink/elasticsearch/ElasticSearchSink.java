@@ -15,25 +15,29 @@
  */
 package com.cognitree.flume.sink.elasticsearch;
 
-import com.cognitree.flume.sink.elasticsearch.client.BulkProcessorBuilder;
+import com.cognitree.flume.sink.elasticsearch.client.BulkProcessorBulider;
 import com.cognitree.flume.sink.elasticsearch.client.ElasticsearchClientBuilder;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import io.netty.util.internal.StringUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.flume.*;
+import org.apache.flume.Channel;
+import org.apache.flume.Context;
+import org.apache.flume.Event;
+import org.apache.flume.Transaction;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,7 +47,7 @@ import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 /**
  * This sink will read the events from a channel and add them to the bulk processor.
  * <p>
- * This sink must be configured with with mandatory parameters detailed in
+ * This sink must be configured with mandatory parameters detailed in
  * {@link Constants}
  */
 public class ElasticSearchSink extends AbstractSink implements Configurable {
@@ -58,41 +62,32 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
     private Serializer serializer;
 
-    private TransportClient client;
+    private RestHighLevelClient client;
 
     private AtomicBoolean shouldBackOff = new AtomicBoolean(false);
 
-    public TransportClient getClient() {
+    public RestHighLevelClient getClient() {
         return client;
     }
-
 
     @Override
     public void configure(Context context) {
         String[] hosts = getHosts(context);
-        if(ArrayUtils.isNotEmpty(hosts)) {
+        if (ArrayUtils.isNotEmpty(hosts)) {
             client = new ElasticsearchClientBuilder(
                     context.getString(PREFIX + ES_CLUSTER_NAME, DEFAULT_ES_CLUSTER_NAME), hosts)
-                    .setTransportSniff(context.getBoolean(
-                            PREFIX + ES_TRANSPORT_SNIFF, false))
-                    .setIgnoreClusterName(context.getBoolean(
-                            PREFIX + ES_IGNORE_CLUSTER_NAME, false))
-                    .setTransportPingTimeout(Util.getTimeValue(context.getString(
-                            PREFIX + ES_TRANSPORT_PING_TIMEOUT), DEFAULT_ES_TIME))
-                    .setNodeSamplerInterval(Util.getTimeValue(context.getString(
-                            PREFIX + ES_TRANSPORT_NODE_SAMPLER_INTERVAL), DEFAULT_ES_TIME))
                     .build();
             buildIndexBuilder(context);
             buildSerializer(context);
-            bulkProcessor = new BulkProcessorBuilder().buildBulkProcessor(context, this);
+            bulkProcessor = new BulkProcessorBulider().buildBulkProcessor(context, this);
         } else {
-            logger.error("Could not create transport client, No host exist");
+            logger.error("Could not create Rest client, No host exist");
         }
     }
 
     @Override
-    public Status process() throws EventDeliveryException {
-        if(shouldBackOff.get()){
+    public Status process() {
+        if (shouldBackOff.get()) {
             throw new NoNodeAvailableException("Check whether Elasticsearch is down or not.");
         }
         Channel channel = getChannel();
@@ -108,8 +103,8 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
                     String type = indexBuilder.getType(event);
                     String id = indexBuilder.getId(event);
                     XContentBuilder xContentBuilder = serializer.serialize(event);
-                    if(xContentBuilder != null) {
-                        if (!StringUtil.isNullOrEmpty(id)) {
+                    if (xContentBuilder != null) {
+                        if (!(Strings.isNullOrEmpty(id))) {
                             bulkProcessor.add(new IndexRequest(index, type, id)
                                     .source(xContentBuilder));
                         } else {
@@ -168,7 +163,7 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
             serializerClass = context.getString(ES_SERIALIZER);
         }
         this.serializer = instantiateClass(serializerClass);
-        if(this.serializer != null) {
+        if (this.serializer != null) {
             this.serializer.configure(context);
         }
     }
@@ -201,23 +196,27 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
      * Sets shouldBackOff to true if bulkProcessor failed to deliver the request.
      * Resets shouldBackOff to false once the connection to elasticsearch is established.
      */
-    public void assertConnection(){
+    public void assertConnection() {
         shouldBackOff.set(true);
         final Timer timer = new Timer();
         final TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                if(checkConnection()) {
-                    shouldBackOff.set(false);
-                    timer.cancel();
-                    timer.purge();
+                try {
+                    if (checkConnection()) {
+                        shouldBackOff.set(false);
+                        timer.cancel();
+                        timer.purge();
+                    }
+                } catch (IOException e) {
+                    logger.error("ping request for elasticsearch failed " + e.getMessage(), e);
                 }
             }
         };
         timer.scheduleAtFixedRate(task, 0, CHECK_CONNECTION_PERIOD);
     }
 
-    private boolean checkConnection(){
-        return !client.connectedNodes().isEmpty();
+    private boolean checkConnection() throws IOException {
+        return client.ping(RequestOptions.DEFAULT);
     }
 }

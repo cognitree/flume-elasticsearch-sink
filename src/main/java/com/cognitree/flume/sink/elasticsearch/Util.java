@@ -28,9 +28,6 @@ import java.io.IOException;
 
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
-/**
- * Created by prashant
- */
 public class Util {
 
     private static final Logger logger = LoggerFactory.getLogger(Util.class);
@@ -101,7 +98,7 @@ public class Util {
     /**
      * Add csv field to the XContentBuilder
      */
-    public static void addField(XContentBuilder xContentBuilder,String key, String value, String type) throws IOException{
+    public static void addField(XContentBuilder xContentBuilder, String key, String value, String type) throws IOException {
         if (type != null) {
             FieldTypeEnum fieldTypeEnum = FieldTypeEnum.valueOf(type.toUpperCase());
             switch (fieldTypeEnum) {

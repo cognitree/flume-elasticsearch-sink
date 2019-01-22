@@ -15,34 +15,29 @@
  */
 package com.cognitree.flume.sink.elasticsearch.client;
 
-import com.google.common.base.Throwables;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.cognitree.flume.sink.elasticsearch.Constants.*;
+import static com.cognitree.flume.sink.elasticsearch.Constants.DEFAULT_ES_PORT;
 
 /**
- * Created by prashant
+ * This class creates  an instance of the {@link RestHighLevelClient}
+ * Set the hosts for the client
  */
 public class ElasticsearchClientBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchClientBuilder.class);
 
     private String clusterName;
-
-    private boolean transportSniff;
-    private boolean ignoreClusterName;
-    private TimeValue transportPingTimeout;
-    private TimeValue nodeSamplerInterval;
 
     private List<TransportAddress> transportAddresses;
 
@@ -51,66 +46,32 @@ public class ElasticsearchClientBuilder {
         setTransportAddresses(hostnames);
     }
 
-
-    public ElasticsearchClientBuilder setTransportSniff(boolean transportSniff) {
-        this.transportSniff = transportSniff;
-        return this;
-    }
-
-    public ElasticsearchClientBuilder setIgnoreClusterName(boolean ignoreClusterName) {
-        this.ignoreClusterName = ignoreClusterName;
-        return this;
-    }
-
-    public ElasticsearchClientBuilder setTransportPingTimeout(TimeValue transportPingTimeout) {
-        this.transportPingTimeout = transportPingTimeout;
-        return this;
-    }
-
-    public ElasticsearchClientBuilder setNodeSamplerInterval(TimeValue nodeSamplerInterval) {
-        this.nodeSamplerInterval = nodeSamplerInterval;
-        return this;
-    }
-
-    public TransportClient build() {
-        TransportClient client;
-        logger.trace("Cluster Name: [{}], Transport Sniff: [{}]" +
-                        ", Ignore Cluster Name: [{}], Transport Ping TimeOut: [{}],  " +
-                        "Node Sampler Interval: [{}], HostName: [{}], Port: [{}] ",
-                new Object[]{clusterName, transportSniff,
-                        ignoreClusterName, transportPingTimeout,
-                        nodeSamplerInterval, transportAddresses});
-        Settings settings = Settings.builder()
-                .put(ES_CLUSTER_NAME,
-                        clusterName)
-                .put(ES_TRANSPORT_SNIFF,
-                        transportSniff)
-                .put(ES_IGNORE_CLUSTER_NAME,
-                        ignoreClusterName)
-                .put(ES_TRANSPORT_PING_TIMEOUT,
-                        transportPingTimeout)
-                .put(ES_TRANSPORT_NODE_SAMPLER_INTERVAL,
-                        nodeSamplerInterval)
-                .build();
-        client = new PreBuiltTransportClient(settings);
-        for (TransportAddress inetSocketTransportAddress : transportAddresses) {
-            client.addTransportAddress(inetSocketTransportAddress);
+    public RestHighLevelClient build() {
+        RestHighLevelClient client;
+        HttpHost[] hosts = new HttpHost[transportAddresses.size()];
+        int i = 0;
+        logger.trace("Cluster Name: [{}], HostName: [{}] ",
+                new Object[]{clusterName, transportAddresses});
+        for (TransportAddress transportAddress : transportAddresses) {
+            hosts[i++] = new HttpHost(transportAddress.address().getAddress(),
+                    transportAddress.address().getPort(), "http");
         }
+        client = new RestHighLevelClient(RestClient.builder(hosts));
         return client;
     }
 
     private void setTransportAddresses(String[] transportAddresses) {
         try {
-            this.transportAddresses = new ArrayList<TransportAddress>(transportAddresses.length);
+            this.transportAddresses = new ArrayList<>(transportAddresses.length);
             for (String transportAddress : transportAddresses) {
-                String hostName = transportAddress.split(":")[0];
-                Integer port = transportAddress.split(":").length > 1 ?
-                        Integer.parseInt(transportAddress.split(":")[1]) : DEFAULT_ES_PORT;
+                String[] hostDetails = transportAddress.split(":");
+                String hostName = hostDetails[0];
+                Integer port = hostDetails.length > 1 ?
+                        Integer.parseInt(hostDetails[1]) : DEFAULT_ES_PORT;
                 this.transportAddresses.add(new TransportAddress(InetAddress.getByName(hostName), port));
             }
-        } catch (Exception e) {
+        } catch (UnknownHostException e) {
             logger.error("Error in creating the TransportAddress for elasticsearch " + e.getMessage(), e);
-            Throwables.propagate(e);
         }
     }
 }

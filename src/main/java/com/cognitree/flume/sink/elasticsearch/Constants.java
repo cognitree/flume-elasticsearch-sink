@@ -16,7 +16,7 @@
 package com.cognitree.flume.sink.elasticsearch;
 
 /**
- * Created by prashant
+ * Class to configure properties and defaults
  */
 public class Constants {
 
@@ -46,8 +46,6 @@ public class Constants {
     public static final String ES_FLUSH_INTERVAL_TIME = "es.flush.interval.time";
     public static final String DEFAULT_ES_FLUSH_INTERVAL_TIME = "10s";
 
-    public static final String DEFAULT_ES_TIME = "5s";
-
     public static final String ES_BACKOFF_POLICY_TIME_INTERVAL = "es.backoff.policy.time.interval";
     public static final String DEFAULT_ES_BACKOFF_POLICY_START_DELAY = "50M";
 
@@ -74,11 +72,6 @@ public class Constants {
 
     public static final Integer DEFAULT_ES_PORT = 9300;
 
-    public static final String ES_TRANSPORT_SNIFF = "client.transport.sniff";
-    public static final String ES_IGNORE_CLUSTER_NAME = "client.transport.ignore_cluster_name";
-    public static final String ES_TRANSPORT_PING_TIMEOUT = "client.transport.ping_timeout";
-    public static final String ES_TRANSPORT_NODE_SAMPLER_INTERVAL = "client.transport.nodes_sampler_interval";
-
     public static final String ES_CSV_FIELDS = "es.serializer.csv.fields";
     public static final String ES_CSV_DELIMITER = "es.serializer.csv.delimiter";
     public static final String DEFAULT_ES_CSV_DELIMITER = ",";
@@ -87,7 +80,7 @@ public class Constants {
 
     /**
      * This enum is used for the time unit
-     *
+     * <p>
      * Time unit can be in Second, Minute or Mili second
      */
     public enum UnitEnum {
@@ -118,9 +111,8 @@ public class Constants {
     }
 
     /**
-     *
      * This enum is used for unit of size of data
-     *
+     * <p>
      * Unit can be in Mega byte or kilo byte
      */
     public enum ByteSizeEnum {
@@ -140,8 +132,7 @@ public class Constants {
     }
 
     /**
-     *  Enum for field type
-     *
+     * Enum for field type
      */
     public enum FieldTypeEnum {
         STRING("string"),
