@@ -30,10 +30,17 @@ import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
@@ -47,23 +54,32 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearchSink.class);
 
+    private static final int CHECK_CONNECTION_PERIOD = 3000;
+
     private BulkProcessor bulkProcessor;
 
     private IndexBuilder indexBuilder;
 
     private Serializer serializer;
 
+    private RestHighLevelClient client;
+
+    private AtomicBoolean shouldBackOff = new AtomicBoolean(false);
+
+    public RestHighLevelClient getClient() {
+        return client;
+    }
+
     @Override
     public void configure(Context context) {
         String[] hosts = getHosts(context);
         if (ArrayUtils.isNotEmpty(hosts)) {
-            RestHighLevelClient client;
             client = new ElasticsearchClientBuilder(
                     context.getString(PREFIX + ES_CLUSTER_NAME, DEFAULT_ES_CLUSTER_NAME), hosts)
                     .build();
             buildIndexBuilder(context);
             buildSerializer(context);
-            bulkProcessor = new BulkProcessorBulider().buildBulkProcessor(context, client);
+            bulkProcessor = new BulkProcessorBulider().buildBulkProcessor(context, this);
         } else {
             logger.error("Could not create Rest client, No host exist");
         }
@@ -71,6 +87,9 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
 
     @Override
     public Status process() {
+        if (shouldBackOff.get()) {
+            throw new NoNodeAvailableException("Check whether Elasticsearch is down or not.");
+        }
         Channel channel = getChannel();
         Transaction txn = channel.getTransaction();
         txn.begin();
@@ -170,5 +189,34 @@ public class ElasticSearchSink extends AbstractSink implements Configurable {
             hosts = context.getString(ES_HOSTS).split(",");
         }
         return hosts;
+    }
+
+    /**
+     * Checks for elasticsearch connection
+     * Sets shouldBackOff to true if bulkProcessor failed to deliver the request.
+     * Resets shouldBackOff to false once the connection to elasticsearch is established.
+     */
+    public void assertConnection() {
+        shouldBackOff.set(true);
+        final Timer timer = new Timer();
+        final TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    if (checkConnection()) {
+                        shouldBackOff.set(false);
+                        timer.cancel();
+                        timer.purge();
+                    }
+                } catch (IOException e) {
+                    logger.error("ping request for elasticsearch failed " + e.getMessage(), e);
+                }
+            }
+        };
+        timer.scheduleAtFixedRate(task, 0, CHECK_CONNECTION_PERIOD);
+    }
+
+    private boolean checkConnection() throws IOException {
+        return client.ping(RequestOptions.DEFAULT);
     }
 }
