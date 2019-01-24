@@ -75,10 +75,10 @@ Example of agent named agent
   agent.sinks.es_sink.es.serializer.avro.schema.file=/usr/local/schema.avsc
 ````
 
-####Available serializers
-#####com.cognitree.flume.sink.elasticsearch.SimpleSerializer
+#### Available serializers
+##### com.cognitree.flume.sink.elasticsearch.SimpleSerializer
 This Serializer assumes the event body to be in JSON format
-#####com.cognitree.flume.sink.elasticsearch.CsvSerializer
+##### com.cognitree.flume.sink.elasticsearch.CsvSerializer
 This Serializer assumes the event body to be in CSV format with custom delimiter specified.
 
 | Property Name                              | Default | Description                                                                                   |
@@ -86,7 +86,7 @@ This Serializer assumes the event body to be in CSV format with custom delimiter
 | es.serializer.csv.fields                   | -            | Must be specified, fires exception otherwise.                                                 |
 | es.serializer.csv.delimiter                | ,            | Delimiter for *es.serializer.csv.fields* property                                             |
 
-#####com.cognitree.flume.sink.elasticsearch.HeaderBasedSerializer
+##### com.cognitree.flume.sink.elasticsearch.HeaderBasedSerializer
 This Serializer assumes the event body as the main field and event headers as additional fields for json document.
 
 | Property Name                              | Default | Description                                                                                   |
