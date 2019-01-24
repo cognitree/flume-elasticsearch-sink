@@ -27,7 +27,7 @@ import java.util.TimeZone;
 
 import static com.cognitree.flume.sink.elasticsearch.Constants.*;
 
-public class TimestampBasedIndexBuilder extends StaticIndexBuilder {
+public class TimestampBasedIndexBuilder implements IndexBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(TimestampBasedIndexBuilder.class);
 
@@ -70,7 +70,7 @@ public class TimestampBasedIndexBuilder extends StaticIndexBuilder {
 
     @Override
     public String getId(Event event) {
-        return super.getId(event);
+        return null;
     }
 
     @Override
