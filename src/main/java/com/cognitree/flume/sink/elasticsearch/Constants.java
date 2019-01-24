@@ -78,6 +78,11 @@ public class Constants {
 
     public static final String ES_AVRO_SCHEMA_FILE = "es.serializer.avro.schema.file";
 
+    public static final String ES_HEADERBASED_BODY_FIELD_NAME = "es.serializer.headerBased.bodyField.name";
+    public static final String DEFAULT_ES_HEADERBASED_BODY_FIELD_NAME = "message";
+    public static final String ES_HEADERBASED_FIELDS = "es.serializer.headerBased.fields";
+    public static final String DEFAULT_ES_HEADERBASED_BODY_FIELD_TYPE = "string";
+
     /**
      * This enum is used for the time unit
      * <p>
@@ -137,6 +142,7 @@ public class Constants {
     public enum FieldTypeEnum {
         STRING("string"),
         INT("int"),
+        LONG("long"),
         FLOAT("float"),
         BOOLEAN("boolean");
 

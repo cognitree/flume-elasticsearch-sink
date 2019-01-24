@@ -65,3 +65,48 @@ Example of agent named agent
   agent.sinks.es_sink.es.serializer.csv.delimiter=,
   agent.sinks.es_sink.es.serializer.avro.schema.file=/usr/local/schema.avsc
 ````
+
+#### Available serializers
+##### com.cognitree.flume.sink.elasticsearch.SimpleSerializer
+This Serializer assumes the event body to be in JSON format
+##### com.cognitree.flume.sink.elasticsearch.CsvSerializer
+This Serializer assumes the event body to be in CSV format with custom delimiter specified.
+
+| Property Name                              | Default | Description                                                                                   |
+|--------------------------------------------|--------------|:----------------------------------------------------------------------------------------------|
+| es.serializer.csv.fields                   | -            | Must be specified, fires exception otherwise.                                                 |
+| es.serializer.csv.delimiter                | ,            | Delimiter for *es.serializer.csv.fields* property                                             |
+
+##### com.cognitree.flume.sink.elasticsearch.HeaderBasedSerializer
+This Serializer assumes the event body as the main field and event headers as additional fields for json document.
+
+| Property Name                              | Default | Description                                                                                   |
+|--------------------------------------------|--------------|:----------------------------------------------------------------------------------------------|
+| es.serializer.headerBased.bodyField.name   | message      | Specifies the name of event body field in resulting json document                             |
+| es.serializer.headerBased.fields           | -            | Must be specified, fires exception otherwise. Specifies data types of event headers. <br> Example: _timestamp:long,host:string,index:int_. <br> Supported data types: *string*, *int*, *long*, *float*, *boolean*|
+
+So, if you have an event such as:
+
+<!-- language: lang-none -->
+    ---------------------------
+    |          Headers        |
+    ---------------------------
+    | host: localhost         |
+    | timestamp: 100000000000 |
+    | index: 1                |
+    ---------------------------
+    |          Body           |
+    ---------------------------
+    | Lorem ipsum dolor sit   |
+    | amet, consectetur       |
+    | adipiscing elit         |
+    ---------------------------
+then Serializer will produce json doc like this:
+```json
+{
+  "host": "localhost",
+  "timestamp": 100000000000,
+  "index": 1,
+  "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+}
+```

@@ -111,6 +111,9 @@ public class Util {
                 case INT:
                     xContentBuilder.field(key, Integer.parseInt(value));
                     break;
+                case LONG:
+                    xContentBuilder.field(key, Long.parseLong(value));
+                    break;
                 case BOOLEAN:
                     xContentBuilder.field(key, Boolean.valueOf(value));
                     break;
