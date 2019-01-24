@@ -40,13 +40,13 @@ Required properties are in bold.
 | es.client.transport.nodes_sampler_interval | 5s             | How often to sample / ping the nodes listed and connected                                     |
 | es.index                                   | default        | Index name to be used to store the documents                                                  |
 | es.type                                    | default        | Type to be used to store the documents                                                        |
-| es.index.builder                           |com.cognitree.<br>flume.sink.<br>elasticsearch.<br>StaticIndexBuilder          | Implementation of com.cognitree.flume.sink.elasticsearch.IndexBuilder interface |
+| es.index.builder                           |com.cognitree.<br>flume.sink.<br>elasticsearch.<br>StaticIndexBuilder          | Implementation of com.cognitree.flume.sink.elasticsearch.IndexBuilder interface|
 | es.serializer                              |com.cognitree.<br>flume.sink.<br>elasticsearch.<br>SimpleSerializer            | Implementation of com.cognitree.flume.sink.elasticsearch.Serializer interface |
 | es.serializer.csv.fields                   | -              | Comma separated csv field name with data type i.e. column1:type1,column2:type2, Supported data types are string, boolean, int and float |
 | es.serializer.csv.delimiter                | ,(comma)       | Delimiter for the data in flume event body|
 | es.serializer.avro.schema.file             | -              | Absolute path for the schema configuration file |
 
-Example of agent named agent
+Example of agent named agent:
 
 ````
   agent.channels = es_channel
@@ -74,3 +74,17 @@ Example of agent named agent
   agent.sinks.es_sink.es.serializer.csv.delimiter=,
   agent.sinks.es_sink.es.serializer.avro.schema.file=/usr/local/schema.avsc
 ````
+
+####Available index builders
+
+#####com.cognitree.flume.sink.elasticsearch.HeaderBasedIndexBuilder
+
+This builder doesn't have configurable parameters. You need to put FlumeEvent headers header called 'index' to customize target index name (default index name: 'default') and 'type' to customise target document type (default document type: 'default').
+
+#####com.cognitree.flume.sink.elasticsearch.TimestampBasedIndexBuilder
+This builder uses *timestamp* or *@timestamp* header, which expected to be a unix timestamp in milliseconds, to build index name, e.g. you can create names like: _my-awesome-index-2019-01-01_.
+
+| Property Name                              | Default | Description                                                                                   |
+|--------------------------------------------|--------------|:----------------------------------------------------------------------------------------------|
+| es.index.builder.date.format                                | -            | Sets a format of date postfix you want to have. Supports ISO 8601 standart. If it's not set - no date postfix will be created|
+| es.index.builder.date.timeZone                              | UTC          | Sets a timezone which will be used to parse the timestamp (uses _TimeZone.getTimeZone()_, so it supports formats like: 'UTC', 'UTC+3', 'Europe/Samara' and etc. <br> Ignored if *date.format* is not set.|
