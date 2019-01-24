@@ -62,6 +62,9 @@ public class Constants {
 
     public static final String ES_INDEX_BUILDER = "es.index.builder";
     public static final String DEFAULT_ES_INDEX_BUILDER = "com.cognitree.flume.sink.elasticsearch.StaticIndexBuilder";
+    public static final String ES_INDEX_BUILDER_DATE_FORMAT = "es.index.builder.date.format";
+    public static final String ES_INDEX_BUILDER_DATE_TIME_ZONE = "es.index.builder.date.timeZone";
+    public static final String DEFAULT_ES_INDEX_BUILDER_DATE_TIME_ZONE = "UTC";
 
     public static final String ES_SERIALIZER = "es.serializer";
     public static final String DEFAULT_ES_SERIALIZER = "com.cognitree.flume.sink.elasticsearch.SimpleSerializer";
