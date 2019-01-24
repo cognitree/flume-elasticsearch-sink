@@ -75,13 +75,13 @@ Example of agent named agent:
   agent.sinks.es_sink.es.serializer.avro.schema.file=/usr/local/schema.avsc
 ````
 
-####Available index builders
+#### Available index builders
 
-#####com.cognitree.flume.sink.elasticsearch.HeaderBasedIndexBuilder
+##### com.cognitree.flume.sink.elasticsearch.HeaderBasedIndexBuilder
 
 This builder doesn't have configurable parameters. You need to put FlumeEvent headers header called 'index' to customize target index name (default index name: 'default') and 'type' to customise target document type (default document type: 'default').
 
-#####com.cognitree.flume.sink.elasticsearch.TimestampBasedIndexBuilder
+##### com.cognitree.flume.sink.elasticsearch.TimestampBasedIndexBuilder
 This builder uses *timestamp* or *@timestamp* header, which expected to be a unix timestamp in milliseconds, to build index name, e.g. you can create names like: _my-awesome-index-2019-01-01_.
 
 | Property Name                              | Default | Description                                                                                   |
