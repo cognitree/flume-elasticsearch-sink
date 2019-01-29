@@ -87,4 +87,4 @@ This builder uses *timestamp* or *@timestamp* header, which expected to be a uni
 | Property Name                              | Default | Description                                                                                   |
 |--------------------------------------------|--------------|:----------------------------------------------------------------------------------------------|
 | es.index.builder.date.format                                | -            | Sets a format of date postfix you want to have. Supports ISO 8601 standart. If it's not set - no date postfix will be created|
-| es.index.builder.date.timeZone                              | UTC          | Sets a timezone which will be used to parse the timestamp (uses _TimeZone.getTimeZone()_, so it supports formats like: 'UTC', 'UTC+3', 'Europe/Samara' and etc. <br> Ignored if *date.format* is not set.|
+| es.index.builder.date.timeZone                              | UTC          | Sets a timezone which will be used to parse the timestamp (uses _TimeZone.getTimeZone()_, so it supports formats like: 'UTC', 'UTC+03:00', 'Europe/Samara' and etc. <br> Ignored if *date.format* is not set.|
